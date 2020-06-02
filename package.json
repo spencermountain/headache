@@ -1,23 +1,36 @@
 {
-  "name": "",
-  "description": "",
+  "name": "headache",
+  "private": true,
   "version": "0.0.1",
-  "author": "Spencer Kelly <spencermountain@gmail.com> (http://spencermounta.in)",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/spencermountain/headache.git"
-  },
-  "main": "./src/index.js",
-  "scripts": {},
-  "dependencies": {
-    "d3-scale": "^1.0.6",
-    "spacetime": "^1.3.1",
-    "superagent": "^3.6.0"
-  },
   "scripts": {
-    "deploy":
-      "gcloud beta functions deploy kate-headache --project kate-headache --stage-bucket kate-headache-code --entry-point main --trigger-http"
+    "build": "rollup -c",
+    "start": "rollup -c -w",
+    "watch": "npm run start",
+    "serve": "serve"
   },
-  "devDependencies": {},
-  "license": "MIT"
+  "prettier": {
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "printWidth": 120
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "11.1.0",
+    "@rollup/plugin-node-resolve": "^7.0.0",
+    "prettier": "^2.0.5",
+    "prettier-plugin-svelte": "^0.7.0",
+    "pug": "^2.0.4",
+    "rollup": "2.7.3",
+    "rollup-plugin-livereload": "^1.0.0",
+    "rollup-plugin-svelte": "^5.0.3",
+    "rollup-plugin-terser": "^5.1.2",
+    "serve": "^11.3.0",
+    "svelte": "^3.0.0",
+    "svelte-preprocess": "^3.7.4"
+  },
+  "dependencies": {
+    "spacetime": "^6.4.3",
+    "spencer-color": "^0.1.0"
+  }
 }
