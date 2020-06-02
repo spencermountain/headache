@@ -1,5 +1,5 @@
 <script>
-  import parse from './margin/parse'
+  import parse from './parse'
   export let value = ''
   export let callback = () => {}
   export let onInput = () => {

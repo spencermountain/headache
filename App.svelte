@@ -1,11 +1,14 @@
 <script>
   import Margin from './Margin.svelte'
   export let user = ''
-  let value = ''
+  let value = 'asdf [fun:cool] and [nice:yes]'
   let keys = []
   function onType(res) {
-    console.log(res)
-    keys = keys.concat(['more'])
+    keys = []
+    res.forEach(l => {
+      l.data.forEach(o => keys.push(o.key))
+    })
+    console.log(keys)
   }
 </script>
 
