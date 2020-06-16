@@ -1,4 +1,4 @@
-import App from './App.svelte'
+import App from './src/App.svelte'
 
 let user = ''
 // wire-in query params

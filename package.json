@@ -30,7 +30,7 @@
     "svelte-preprocess": "^3.7.4"
   },
   "dependencies": {
-    "spacetime": "^6.4.3",
+    "spacetime": "^6.6.0",
     "spencer-color": "^0.1.0"
   }
 }

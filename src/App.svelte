@@ -1,5 +1,5 @@
 <script>
-  import Margin from './Margin.svelte'
+  import Week from './Week.svelte'
   export let user = ''
   let value = 'asdf [fun:cool] and [nice:yes]'
   let keys = []
@@ -16,16 +16,16 @@
 
 </style>
 
-<div class="main row nowrap">
-  user:
-  <input bind:value={user} />
-</div>
 <div class="main">
-  <Margin bind:value callback={onType} />
+  <div class="row nowrap">
+    <!-- user: -->
+    <!-- <input bind:value={user} /> -->
+    <Week bind:value callback={onType} />
+  </div>
+  <div class=" row">
+    {#each keys as key}
+      <div>{key}</div>
+    {/each}
+  </div>
+  <div>[calendar]</div>
 </div>
-<div class="main row">
-  {#each keys as key}
-    <div>{key}</div>
-  {/each}
-</div>
-<div class="main">[calendar]</div>
