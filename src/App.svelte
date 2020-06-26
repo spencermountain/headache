@@ -1,6 +1,6 @@
 <script>
   import Week from './Week.svelte'
-  export let user = ''
+  // export let user = ''
   let value = 'asdf [fun:cool] and [nice:yes]'
   let keys = []
   function onType(res) {
@@ -10,6 +10,12 @@
     })
     console.log(keys)
   }
+  import { setContext } from 'svelte'
+  let data = {
+    '2020-06-23': 'asdf',
+    '2020-07-23': 'asdf',
+  }
+  setContext('data', data)
 </script>
 
 <style>
@@ -27,5 +33,5 @@
       <div>{key}</div>
     {/each}
   </div>
-  <div>[calendar]</div>
+  <div class="col outline">[calendar]</div>
 </div>
