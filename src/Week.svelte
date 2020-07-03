@@ -29,15 +29,6 @@
     /* border-radius: 5px; */
   }
 
-  .leftSide {
-    /* border-right: 4px solid #e6b3bc; */
-    /* color: #a6a6a6; */
-    color: #e6b3bc;
-    padding-right: 10px;
-    font-size: 40px;
-    opacity: 0.6;
-    cursor: pointer;
-  }
   .rightSide {
     /* border-left: 4px solid #b0c4de; */
     font-size: 40px;
@@ -50,7 +41,7 @@
 
 <div class="col">
   <div class="month">
-    <div>{s.format('{month} {year}')}</div>
+    <!-- <div>{s.format('{month} {year}')}</div> -->
     <!-- <div>{'w' + s.week() + ' - ' + s.year()}</div> -->
   </div>
   <div class="row nowrap week">
@@ -61,7 +52,7 @@
       {/each}
     </div>
     <div class="rightSide">
-      <Year date={s} />
+      <!-- <Year date={s} /> -->
     </div>
   </div>
 </div>

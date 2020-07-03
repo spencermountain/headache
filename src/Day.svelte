@@ -51,10 +51,11 @@
     flex: 1;
     margin-bottom: 0.5rem;
     border-left: 3px solid steelblue;
+    /* border-right: 1px solid; */
     border-bottom: none;
     min-width: 90%;
     min-height: 3rem;
-    font-size: 1.2rem;
+    font-size: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     border-radius: 5px;
@@ -75,22 +76,22 @@
   .title {
     /* color: #7896b5; */
     color: #577c97;
-    margin: 1rem;
-    display: inline;
+    font-size: 0.9rem;
     font-family: 'Courier New', Courier, monospace;
   }
   .today {
-    /* border-bottom: 1px solid #d68881;
-    display: inline; */
-    color: white;
+    border-bottom: 1px solid steelblue;
+    display: inline;
+    /* color: white; */
   }
   .weekend {
     border-left: 2px solid #d68881;
+    /* border-left: 2px solid lightsteelblue; */
   }
 </style>
 
 <div class="container">
-  <div class="title" class:today={isToday}>{date.format('{day-short} {date-ordinal}')}</div>
+  <div class="title" class:today={isToday}>{date.format('{day-short} {month-short} {date}')}</div>
   <textarea
     class="textarea"
     class:weekend={isWeekend}

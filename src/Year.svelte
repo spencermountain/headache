@@ -1,6 +1,8 @@
 <script>
   import spacetime from 'spacetime'
-  export let date = spacetime.now()
+  let now = spacetime.now()
+  export let date = now
+  console.log(now)
   let s = date.startOf('year')
   let weeks = s.every('week', s.endOf('year'))
   let colors = ['#3E7995', '#6E9588', '#87B0B7', '#8797B7', '#B0BC93']
@@ -11,7 +13,9 @@
     return {
       month: w.month(),
       iso: w.format('iso-short'),
+      fill: w.isSame(date, 'week'),
       colors: cols,
+      opacity: w.isAfter(now) ? 0.2 : 0.7,
     }
   })
   console.log(weeks)
@@ -28,19 +32,49 @@
   .year {
     font-size: 1rem;
   }
+  .isNow {
+    /* border-left: 2px solid white; */
+    /* height: 20px; */
+    /* padding-left: 30px; */
+  }
+  .mh1 {
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
+  }
+  .week {
+    justify-content: center;
+  }
 </style>
 
 <div class="col">
-  <div class="year">{s.year()}</div>
+  <div class="year row nowrap">
+    <div>&lt;</div>
+    <div class="mh1">{s.year()}</div>
+    <div>&gt;</div>
+  </div>
   {#each weeks as w}
-    <div class="row nowrap week">
-      <div class="day" style="border:1px solid {w.colors[0]};" />
-      <div class="day" style="border:1px solid {w.colors[1]};" />
-      <div class="day" style="border:1px solid {w.colors[2]};" />
-      <div class="day" style="border:1px solid {w.colors[3]};" />
-      <div class="day" style="border:1px solid {w.colors[4]};" />
-      <div class="day" style="border:1px solid {w.colors[5]};" />
-      <div class="day" style="border:1px solid {w.colors[6]};" />
+    <div class="row nowrap week" class:isNow={w.fill}>
+      <div
+        class="day"
+        style="border:1px solid {w.colors[0]}; opacity:{w.opacity}; background-color:{w.fill ? w.colors[0] : 'none'};" />
+      <div
+        class="day"
+        style="border:1px solid {w.colors[1]}; opacity:{w.opacity}; background-color:{w.fill ? w.colors[1] : 'none'};" />
+      <div
+        class="day"
+        style="border:1px solid {w.colors[2]}; opacity:{w.opacity}; background-color:{w.fill ? w.colors[2] : 'none'};" />
+      <div
+        class="day"
+        style="border:1px solid {w.colors[3]}; opacity:{w.opacity}; background-color:{w.fill ? w.colors[3] : 'none'};" />
+      <div
+        class="day"
+        style="border:1px solid {w.colors[4]}; opacity:{w.opacity}; background-color:{w.fill ? w.colors[4] : 'none'};" />
+      <div
+        class="day"
+        style="border:1px solid {w.colors[5]}; opacity:{w.opacity}; background-color:{w.fill ? w.colors[5] : 'none'};" />
+      <div
+        class="day"
+        style="border:1px solid {w.colors[6]}; opacity:{w.opacity}; background-color:{w.fill ? w.colors[6] : 'none'};" />
     </div>
   {/each}
 </div>

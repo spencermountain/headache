@@ -4514,7 +4514,7 @@ var app = (function () {
     function create_fragment(ctx) {
     	let div1;
     	let div0;
-    	let t0_value = /*date*/ ctx[0].format("{day-short} {date-ordinal}") + "";
+    	let t0_value = /*date*/ ctx[0].format("{day-short} {month-short} {date}") + "";
     	let t0;
     	let t1;
     	let textarea;
@@ -4528,16 +4528,16 @@ var app = (function () {
     			t0 = text(t0_value);
     			t1 = space();
     			textarea = element("textarea");
-    			attr_dev(div0, "class", "title svelte-11jzt5m");
+    			attr_dev(div0, "class", "title svelte-ycejwd");
     			toggle_class(div0, "today", /*isToday*/ ctx[4]);
-    			add_location(div0, file, 92, 2, 2013);
-    			attr_dev(textarea, "class", "textarea svelte-11jzt5m");
+    			add_location(div0, file, 93, 2, 2081);
+    			attr_dev(textarea, "class", "textarea svelte-ycejwd");
     			attr_dev(textarea, "spellcheck", "false");
     			attr_dev(textarea, "resizable", "false");
     			toggle_class(textarea, "weekend", /*isWeekend*/ ctx[5]);
-    			add_location(textarea, file, 93, 2, 2106);
-    			attr_dev(div1, "class", "container svelte-11jzt5m");
-    			add_location(div1, file, 91, 0, 1987);
+    			add_location(textarea, file, 94, 2, 2180);
+    			attr_dev(div1, "class", "container svelte-ycejwd");
+    			add_location(div1, file, 92, 0, 2055);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4571,7 +4571,7 @@ var app = (function () {
     		},
     		p: function update(new_ctx, [dirty]) {
     			ctx = new_ctx;
-    			if (dirty & /*date*/ 1 && t0_value !== (t0_value = /*date*/ ctx[0].format("{day-short} {date-ordinal}") + "")) set_data_dev(t0, t0_value);
+    			if (dirty & /*date*/ 1 && t0_value !== (t0_value = /*date*/ ctx[0].format("{day-short} {month-short} {date}") + "")) set_data_dev(t0, t0_value);
 
     			if (dirty & /*isToday*/ 16) {
     				toggle_class(div0, "today", /*isToday*/ ctx[4]);
@@ -4769,11 +4769,11 @@ var app = (function () {
 
     function get_each_context(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[4] = list[i];
+    	child_ctx[5] = list[i];
     	return child_ctx;
     }
 
-    // (35:2) {#each weeks as w}
+    // (55:2) {#each weeks as w}
     function create_each_block(ctx) {
     	let div7;
     	let div0;
@@ -4808,29 +4808,44 @@ var app = (function () {
     			t5 = space();
     			div6 = element("div");
     			t6 = space();
-    			attr_dev(div0, "class", "day svelte-1ax1v99");
-    			set_style(div0, "border", "1px solid " + /*w*/ ctx[4].colors[0]);
-    			add_location(div0, file$1, 36, 6, 810);
-    			attr_dev(div1, "class", "day svelte-1ax1v99");
-    			set_style(div1, "border", "1px solid " + /*w*/ ctx[4].colors[1]);
-    			add_location(div1, file$1, 37, 6, 876);
-    			attr_dev(div2, "class", "day svelte-1ax1v99");
-    			set_style(div2, "border", "1px solid " + /*w*/ ctx[4].colors[2]);
-    			add_location(div2, file$1, 38, 6, 942);
-    			attr_dev(div3, "class", "day svelte-1ax1v99");
-    			set_style(div3, "border", "1px solid " + /*w*/ ctx[4].colors[3]);
-    			add_location(div3, file$1, 39, 6, 1008);
-    			attr_dev(div4, "class", "day svelte-1ax1v99");
-    			set_style(div4, "border", "1px solid " + /*w*/ ctx[4].colors[4]);
-    			add_location(div4, file$1, 40, 6, 1074);
-    			attr_dev(div5, "class", "day svelte-1ax1v99");
-    			set_style(div5, "border", "1px solid " + /*w*/ ctx[4].colors[5]);
-    			add_location(div5, file$1, 41, 6, 1140);
-    			attr_dev(div6, "class", "day svelte-1ax1v99");
-    			set_style(div6, "border", "1px solid " + /*w*/ ctx[4].colors[6]);
-    			add_location(div6, file$1, 42, 6, 1206);
-    			attr_dev(div7, "class", "row nowrap week");
-    			add_location(div7, file$1, 35, 4, 774);
+    			attr_dev(div0, "class", "day svelte-1x1zvfc");
+    			set_style(div0, "border", "1px solid " + /*w*/ ctx[5].colors[0]);
+    			set_style(div0, "opacity", /*w*/ ctx[5].opacity);
+    			set_style(div0, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[0] : "none");
+    			add_location(div0, file$1, 56, 6, 1245);
+    			attr_dev(div1, "class", "day svelte-1x1zvfc");
+    			set_style(div1, "border", "1px solid " + /*w*/ ctx[5].colors[1]);
+    			set_style(div1, "opacity", /*w*/ ctx[5].opacity);
+    			set_style(div1, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[1] : "none");
+    			add_location(div1, file$1, 59, 6, 1398);
+    			attr_dev(div2, "class", "day svelte-1x1zvfc");
+    			set_style(div2, "border", "1px solid " + /*w*/ ctx[5].colors[2]);
+    			set_style(div2, "opacity", /*w*/ ctx[5].opacity);
+    			set_style(div2, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[2] : "none");
+    			add_location(div2, file$1, 62, 6, 1551);
+    			attr_dev(div3, "class", "day svelte-1x1zvfc");
+    			set_style(div3, "border", "1px solid " + /*w*/ ctx[5].colors[3]);
+    			set_style(div3, "opacity", /*w*/ ctx[5].opacity);
+    			set_style(div3, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[3] : "none");
+    			add_location(div3, file$1, 65, 6, 1704);
+    			attr_dev(div4, "class", "day svelte-1x1zvfc");
+    			set_style(div4, "border", "1px solid " + /*w*/ ctx[5].colors[4]);
+    			set_style(div4, "opacity", /*w*/ ctx[5].opacity);
+    			set_style(div4, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[4] : "none");
+    			add_location(div4, file$1, 68, 6, 1857);
+    			attr_dev(div5, "class", "day svelte-1x1zvfc");
+    			set_style(div5, "border", "1px solid " + /*w*/ ctx[5].colors[5]);
+    			set_style(div5, "opacity", /*w*/ ctx[5].opacity);
+    			set_style(div5, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[5] : "none");
+    			add_location(div5, file$1, 71, 6, 2010);
+    			attr_dev(div6, "class", "day svelte-1x1zvfc");
+    			set_style(div6, "border", "1px solid " + /*w*/ ctx[5].colors[6]);
+    			set_style(div6, "opacity", /*w*/ ctx[5].opacity);
+    			set_style(div6, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[6] : "none");
+    			add_location(div6, file$1, 74, 6, 2163);
+    			attr_dev(div7, "class", "row nowrap week svelte-1x1zvfc");
+    			toggle_class(div7, "isNow", /*w*/ ctx[5].fill);
+    			add_location(div7, file$1, 55, 4, 1188);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div7, anchor);
@@ -4851,31 +4866,91 @@ var app = (function () {
     		},
     		p: function update(ctx, dirty) {
     			if (dirty & /*weeks*/ 1) {
-    				set_style(div0, "border", "1px solid " + /*w*/ ctx[4].colors[0]);
+    				set_style(div0, "border", "1px solid " + /*w*/ ctx[5].colors[0]);
     			}
 
     			if (dirty & /*weeks*/ 1) {
-    				set_style(div1, "border", "1px solid " + /*w*/ ctx[4].colors[1]);
+    				set_style(div0, "opacity", /*w*/ ctx[5].opacity);
     			}
 
     			if (dirty & /*weeks*/ 1) {
-    				set_style(div2, "border", "1px solid " + /*w*/ ctx[4].colors[2]);
+    				set_style(div0, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[0] : "none");
     			}
 
     			if (dirty & /*weeks*/ 1) {
-    				set_style(div3, "border", "1px solid " + /*w*/ ctx[4].colors[3]);
+    				set_style(div1, "border", "1px solid " + /*w*/ ctx[5].colors[1]);
     			}
 
     			if (dirty & /*weeks*/ 1) {
-    				set_style(div4, "border", "1px solid " + /*w*/ ctx[4].colors[4]);
+    				set_style(div1, "opacity", /*w*/ ctx[5].opacity);
     			}
 
     			if (dirty & /*weeks*/ 1) {
-    				set_style(div5, "border", "1px solid " + /*w*/ ctx[4].colors[5]);
+    				set_style(div1, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[1] : "none");
     			}
 
     			if (dirty & /*weeks*/ 1) {
-    				set_style(div6, "border", "1px solid " + /*w*/ ctx[4].colors[6]);
+    				set_style(div2, "border", "1px solid " + /*w*/ ctx[5].colors[2]);
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div2, "opacity", /*w*/ ctx[5].opacity);
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div2, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[2] : "none");
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div3, "border", "1px solid " + /*w*/ ctx[5].colors[3]);
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div3, "opacity", /*w*/ ctx[5].opacity);
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div3, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[3] : "none");
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div4, "border", "1px solid " + /*w*/ ctx[5].colors[4]);
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div4, "opacity", /*w*/ ctx[5].opacity);
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div4, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[4] : "none");
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div5, "border", "1px solid " + /*w*/ ctx[5].colors[5]);
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div5, "opacity", /*w*/ ctx[5].opacity);
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div5, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[5] : "none");
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div6, "border", "1px solid " + /*w*/ ctx[5].colors[6]);
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div6, "opacity", /*w*/ ctx[5].opacity);
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				set_style(div6, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[6] : "none");
+    			}
+
+    			if (dirty & /*weeks*/ 1) {
+    				toggle_class(div7, "isNow", /*w*/ ctx[5].fill);
     			}
     		},
     		d: function destroy(detaching) {
@@ -4887,7 +4962,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(35:2) {#each weeks as w}",
+    		source: "(55:2) {#each weeks as w}",
     		ctx
     	});
 
@@ -4895,9 +4970,14 @@ var app = (function () {
     }
 
     function create_fragment$1(ctx) {
-    	let div1;
+    	let div4;
+    	let div3;
     	let div0;
     	let t1;
+    	let div1;
+    	let t3;
+    	let div2;
+    	let t5;
     	let each_value = /*weeks*/ ctx[0];
     	validate_each_argument(each_value);
     	let each_blocks = [];
@@ -4908,30 +4988,46 @@ var app = (function () {
 
     	const block = {
     		c: function create() {
-    			div1 = element("div");
+    			div4 = element("div");
+    			div3 = element("div");
     			div0 = element("div");
-    			div0.textContent = `${/*s*/ ctx[1].year()}`;
+    			div0.textContent = "<";
     			t1 = space();
+    			div1 = element("div");
+    			div1.textContent = `${/*s*/ ctx[1].year()}`;
+    			t3 = space();
+    			div2 = element("div");
+    			div2.textContent = ">";
+    			t5 = space();
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			attr_dev(div0, "class", "year svelte-1ax1v99");
-    			add_location(div0, file$1, 33, 2, 714);
-    			attr_dev(div1, "class", "col");
-    			add_location(div1, file$1, 32, 0, 694);
+    			add_location(div0, file$1, 50, 4, 1080);
+    			attr_dev(div1, "class", "mh1 svelte-1x1zvfc");
+    			add_location(div1, file$1, 51, 4, 1100);
+    			add_location(div2, file$1, 52, 4, 1138);
+    			attr_dev(div3, "class", "year row nowrap svelte-1x1zvfc");
+    			add_location(div3, file$1, 49, 2, 1046);
+    			attr_dev(div4, "class", "col");
+    			add_location(div4, file$1, 48, 0, 1026);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div1, anchor);
-    			append_dev(div1, div0);
-    			append_dev(div1, t1);
+    			insert_dev(target, div4, anchor);
+    			append_dev(div4, div3);
+    			append_dev(div3, div0);
+    			append_dev(div3, t1);
+    			append_dev(div3, div1);
+    			append_dev(div3, t3);
+    			append_dev(div3, div2);
+    			append_dev(div4, t5);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(div1, null);
+    				each_blocks[i].m(div4, null);
     			}
     		},
     		p: function update(ctx, [dirty]) {
@@ -4948,7 +5044,7 @@ var app = (function () {
     					} else {
     						each_blocks[i] = create_each_block(child_ctx);
     						each_blocks[i].c();
-    						each_blocks[i].m(div1, null);
+    						each_blocks[i].m(div4, null);
     					}
     				}
 
@@ -4962,7 +5058,7 @@ var app = (function () {
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div1);
+    			if (detaching) detach_dev(div4);
     			destroy_each(each_blocks, detaching);
     		}
     	};
@@ -4979,7 +5075,9 @@ var app = (function () {
     }
 
     function instance$1($$self, $$props, $$invalidate) {
-    	let { date = src.now() } = $$props;
+    	let now = src.now();
+    	let { date = now } = $$props;
+    	console.log(now);
     	let s = date.startOf("year");
     	let weeks = s.every("week", s.endOf("year"));
     	let colors = ["#3E7995", "#6E9588", "#87B0B7", "#8797B7", "#B0BC93"];
@@ -4992,7 +5090,9 @@ var app = (function () {
     		return {
     			month: w.month(),
     			iso: w.format("iso-short"),
-    			colors: cols
+    			fill: w.isSame(date, "week"),
+    			colors: cols,
+    			opacity: w.isAfter(now) ? 0.2 : 0.7
     		};
     	});
 
@@ -5010,9 +5110,10 @@ var app = (function () {
     		if ("date" in $$props) $$invalidate(2, date = $$props.date);
     	};
 
-    	$$self.$capture_state = () => ({ spacetime: src, date, s, weeks, colors });
+    	$$self.$capture_state = () => ({ spacetime: src, now, date, s, weeks, colors });
 
     	$$self.$inject_state = $$props => {
+    		if ("now" in $$props) now = $$props.now;
     		if ("date" in $$props) $$invalidate(2, date = $$props.date);
     		if ("s" in $$props) $$invalidate(1, s = $$props.s);
     		if ("weeks" in $$props) $$invalidate(0, weeks = $$props.weeks);
@@ -5057,7 +5158,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (59:6) {#each days as d}
+    // (50:6) {#each days as d}
     function create_each_block$1(ctx) {
     	let current;
 
@@ -5093,7 +5194,7 @@ var app = (function () {
     		block,
     		id: create_each_block$1.name,
     		type: "each",
-    		source: "(59:6) {#each days as d}",
+    		source: "(50:6) {#each days as d}",
     		ctx
     	});
 
@@ -5101,18 +5202,15 @@ var app = (function () {
     }
 
     function create_fragment$2(ctx) {
-    	let div5;
-    	let div1;
-    	let div0;
-    	let t0_value = /*s*/ ctx[0].format("{month} {year}") + "";
-    	let t0;
-    	let t1;
     	let div4;
-    	let div2;
-    	let t2;
+    	let div0;
+    	let t0;
     	let div3;
+    	let div1;
+    	let t1;
+    	let div2;
     	let current;
-    	let each_value = /*days*/ ctx[1];
+    	let each_value = /*days*/ ctx[0];
     	validate_each_argument(each_value);
     	let each_blocks = [];
 
@@ -5124,66 +5222,52 @@ var app = (function () {
     		each_blocks[i] = null;
     	});
 
-    	const year = new Year({
-    			props: { date: /*s*/ ctx[0] },
-    			$$inline: true
-    		});
-
     	const block = {
     		c: function create() {
-    			div5 = element("div");
-    			div1 = element("div");
-    			div0 = element("div");
-    			t0 = text(t0_value);
-    			t1 = space();
     			div4 = element("div");
-    			div2 = element("div");
+    			div0 = element("div");
+    			t0 = space();
+    			div3 = element("div");
+    			div1 = element("div");
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			t2 = space();
-    			div3 = element("div");
-    			create_component(year.$$.fragment);
-    			add_location(div0, file$2, 52, 4, 1063);
-    			attr_dev(div1, "class", "month svelte-1sowut1");
-    			add_location(div1, file$2, 51, 2, 1039);
-    			attr_dev(div2, "class", "slider svelte-1sowut1");
-    			add_location(div2, file$2, 57, 4, 1254);
-    			attr_dev(div3, "class", "rightSide svelte-1sowut1");
-    			add_location(div3, file$2, 62, 4, 1353);
-    			attr_dev(div4, "class", "row nowrap week svelte-1sowut1");
-    			add_location(div4, file$2, 55, 2, 1174);
-    			attr_dev(div5, "class", "col");
-    			add_location(div5, file$2, 50, 0, 1019);
+    			t1 = space();
+    			div2 = element("div");
+    			attr_dev(div0, "class", "month svelte-cyvhda");
+    			add_location(div0, file$2, 42, 2, 847);
+    			attr_dev(div1, "class", "slider svelte-cyvhda");
+    			add_location(div1, file$2, 48, 4, 1071);
+    			attr_dev(div2, "class", "rightSide svelte-cyvhda");
+    			add_location(div2, file$2, 53, 4, 1170);
+    			attr_dev(div3, "class", "row nowrap week svelte-cyvhda");
+    			add_location(div3, file$2, 46, 2, 991);
+    			attr_dev(div4, "class", "col");
+    			add_location(div4, file$2, 41, 0, 827);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div5, anchor);
-    			append_dev(div5, div1);
-    			append_dev(div1, div0);
-    			append_dev(div0, t0);
-    			append_dev(div5, t1);
-    			append_dev(div5, div4);
-    			append_dev(div4, div2);
+    			insert_dev(target, div4, anchor);
+    			append_dev(div4, div0);
+    			append_dev(div4, t0);
+    			append_dev(div4, div3);
+    			append_dev(div3, div1);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(div2, null);
+    				each_blocks[i].m(div1, null);
     			}
 
-    			append_dev(div4, t2);
-    			append_dev(div4, div3);
-    			mount_component(year, div3, null);
+    			append_dev(div3, t1);
+    			append_dev(div3, div2);
     			current = true;
     		},
     		p: function update(ctx, [dirty]) {
-    			if ((!current || dirty & /*s*/ 1) && t0_value !== (t0_value = /*s*/ ctx[0].format("{month} {year}") + "")) set_data_dev(t0, t0_value);
-
-    			if (dirty & /*days*/ 2) {
-    				each_value = /*days*/ ctx[1];
+    			if (dirty & /*days*/ 1) {
+    				each_value = /*days*/ ctx[0];
     				validate_each_argument(each_value);
     				let i;
 
@@ -5197,7 +5281,7 @@ var app = (function () {
     						each_blocks[i] = create_each_block$1(child_ctx);
     						each_blocks[i].c();
     						transition_in(each_blocks[i], 1);
-    						each_blocks[i].m(div2, null);
+    						each_blocks[i].m(div1, null);
     					}
     				}
 
@@ -5209,10 +5293,6 @@ var app = (function () {
 
     				check_outros();
     			}
-
-    			const year_changes = {};
-    			if (dirty & /*s*/ 1) year_changes.date = /*s*/ ctx[0];
-    			year.$set(year_changes);
     		},
     		i: function intro(local) {
     			if (current) return;
@@ -5221,7 +5301,6 @@ var app = (function () {
     				transition_in(each_blocks[i]);
     			}
 
-    			transition_in(year.$$.fragment, local);
     			current = true;
     		},
     		o: function outro(local) {
@@ -5231,13 +5310,11 @@ var app = (function () {
     				transition_out(each_blocks[i]);
     			}
 
-    			transition_out(year.$$.fragment, local);
     			current = false;
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div5);
+    			if (detaching) detach_dev(div4);
     			destroy_each(each_blocks, detaching);
-    			destroy_component(year);
     		}
     	};
 
@@ -5268,29 +5345,29 @@ var app = (function () {
     	validate_slots("Week", $$slots, []);
 
     	$$self.$set = $$props => {
-    		if ("date" in $$props) $$invalidate(2, date = $$props.date);
+    		if ("date" in $$props) $$invalidate(1, date = $$props.date);
     	};
 
     	$$self.$capture_state = () => ({ spacetime: src, Day, Year, date, s, end, days });
 
     	$$self.$inject_state = $$props => {
-    		if ("date" in $$props) $$invalidate(2, date = $$props.date);
-    		if ("s" in $$props) $$invalidate(0, s = $$props.s);
+    		if ("date" in $$props) $$invalidate(1, date = $$props.date);
+    		if ("s" in $$props) s = $$props.s;
     		if ("end" in $$props) end = $$props.end;
-    		if ("days" in $$props) $$invalidate(1, days = $$props.days);
+    		if ("days" in $$props) $$invalidate(0, days = $$props.days);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [s, days, date];
+    	return [days, date];
     }
 
     class Week extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$2, create_fragment$2, safe_not_equal, { date: 2 });
+    		init(this, options, instance$2, create_fragment$2, safe_not_equal, { date: 1 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -5309,10 +5386,93 @@ var app = (function () {
     	}
     }
 
-    /* src/App.svelte generated by Svelte v3.23.0 */
+    /* src/Pouch.svelte generated by Svelte v3.23.0 */
 
     const { console: console_1$2 } = globals;
-    const file$3 = "src/App.svelte";
+    const file$3 = "src/Pouch.svelte";
+
+    function create_fragment$3(ctx) {
+    	let div;
+
+    	const block = {
+    		c: function create() {
+    			div = element("div");
+    			div.textContent = "pouchdb";
+    			add_location(div, file$3, 20, 0, 415);
+    		},
+    		l: function claim(nodes) {
+    			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div, anchor);
+    		},
+    		p: noop,
+    		i: noop,
+    		o: noop,
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_fragment$3.name,
+    		type: "component",
+    		source: "",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    function instance$3($$self, $$props, $$invalidate) {
+    	let db = new PouchDB("db");
+
+    	const replication = PouchDB.sync("db", "http://34.86.136.15:5984/headache", { live: true, retry: false }).on("change", async function (info) {
+    		console.log(info);
+    	}).on("error", function (err) {
+    		console.log("Replication error:", err);
+    	});
+
+    	const writable_props = [];
+
+    	Object.keys($$props).forEach(key => {
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<Pouch> was created with unknown prop '${key}'`);
+    	});
+
+    	let { $$slots = {}, $$scope } = $$props;
+    	validate_slots("Pouch", $$slots, []);
+    	$$self.$capture_state = () => ({ db, replication });
+
+    	$$self.$inject_state = $$props => {
+    		if ("db" in $$props) db = $$props.db;
+    	};
+
+    	if ($$props && "$$inject" in $$props) {
+    		$$self.$inject_state($$props.$$inject);
+    	}
+
+    	return [];
+    }
+
+    class Pouch extends SvelteComponentDev {
+    	constructor(options) {
+    		super(options);
+    		init(this, options, instance$3, create_fragment$3, safe_not_equal, {});
+
+    		dispatch_dev("SvelteRegisterComponent", {
+    			component: this,
+    			tagName: "Pouch",
+    			options,
+    			id: create_fragment$3.name
+    		});
+    	}
+    }
+
+    /* src/App.svelte generated by Svelte v3.23.0 */
+
+    const { console: console_1$3 } = globals;
+    const file$4 = "src/App.svelte";
 
     function get_each_context$2(ctx, list, i) {
     	const child_ctx = ctx.slice();
@@ -5320,7 +5480,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (32:4) {#each keys as key}
+    // (47:4) {#each keys as key}
     function create_each_block$2(ctx) {
     	let div;
     	let t_value = /*key*/ ctx[5] + "";
@@ -5330,7 +5490,7 @@ var app = (function () {
     		c: function create() {
     			div = element("div");
     			t = text(t_value);
-    			add_location(div, file$3, 32, 6, 646);
+    			add_location(div, file$4, 47, 6, 993);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -5348,22 +5508,24 @@ var app = (function () {
     		block,
     		id: create_each_block$2.name,
     		type: "each",
-    		source: "(32:4) {#each keys as key}",
+    		source: "(47:4) {#each keys as key}",
     		ctx
     	});
 
     	return block;
     }
 
-    function create_fragment$3(ctx) {
+    function create_fragment$4(ctx) {
     	let div3;
+    	let t0;
     	let div0;
     	let updating_value;
-    	let t0;
-    	let div1;
     	let t1;
+    	let div1;
+    	let t2;
     	let div2;
     	let current;
+    	const pouch = new Pouch({ $$inline: true });
 
     	function week_value_binding(value) {
     		/*week_value_binding*/ ctx[4].call(null, value);
@@ -5388,42 +5550,46 @@ var app = (function () {
     	const block = {
     		c: function create() {
     			div3 = element("div");
+    			create_component(pouch.$$.fragment);
+    			t0 = space();
     			div0 = element("div");
     			create_component(week.$$.fragment);
-    			t0 = space();
+    			t1 = space();
     			div1 = element("div");
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			t1 = space();
+    			t2 = space();
     			div2 = element("div");
     			div2.textContent = "[calendar]";
-    			attr_dev(div0, "class", "row nowrap");
-    			add_location(div0, file$3, 25, 2, 459);
+    			attr_dev(div0, "class", "row nowrap week svelte-1pwd1ps");
+    			add_location(div0, file$4, 40, 2, 801);
     			attr_dev(div1, "class", " row");
-    			add_location(div1, file$3, 30, 2, 597);
+    			add_location(div1, file$4, 45, 2, 944);
     			attr_dev(div2, "class", "col outline");
-    			add_location(div2, file$3, 35, 2, 686);
+    			add_location(div2, file$4, 50, 2, 1033);
     			attr_dev(div3, "class", "main");
-    			add_location(div3, file$3, 24, 0, 438);
+    			add_location(div3, file$4, 38, 0, 768);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div3, anchor);
+    			mount_component(pouch, div3, null);
+    			append_dev(div3, t0);
     			append_dev(div3, div0);
     			mount_component(week, div0, null);
-    			append_dev(div3, t0);
+    			append_dev(div3, t1);
     			append_dev(div3, div1);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].m(div1, null);
     			}
 
-    			append_dev(div3, t1);
+    			append_dev(div3, t2);
     			append_dev(div3, div2);
     			current = true;
     		},
@@ -5464,15 +5630,18 @@ var app = (function () {
     		},
     		i: function intro(local) {
     			if (current) return;
+    			transition_in(pouch.$$.fragment, local);
     			transition_in(week.$$.fragment, local);
     			current = true;
     		},
     		o: function outro(local) {
+    			transition_out(pouch.$$.fragment, local);
     			transition_out(week.$$.fragment, local);
     			current = false;
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div3);
+    			destroy_component(pouch);
     			destroy_component(week);
     			destroy_each(each_blocks, detaching);
     		}
@@ -5480,7 +5649,7 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_fragment$3.name,
+    		id: create_fragment$4.name,
     		type: "component",
     		source: "",
     		ctx
@@ -5489,7 +5658,7 @@ var app = (function () {
     	return block;
     }
 
-    function instance$3($$self, $$props, $$invalidate) {
+    function instance$4($$self, $$props, $$invalidate) {
     	let value = "asdf [fun:cool] and [nice:yes]";
     	let keys = [];
 
@@ -5504,15 +5673,26 @@ var app = (function () {
     	}
 
     	let data = {
-    		"2020-06-23": "asdf",
-    		"2020-07-23": "asdf"
+    		"2020-06-23": "",
+    		"2020-06-24": ".kates\n.dream = stress",
+    		"2020-06-25": "drove to port credit\n\n.kate\n.dream = stress",
+    		"2020-06-26": `i worked on this app and it is not that good yet.
+
+.micheal
+.work = headache
+.release=false
+.beer=true
+
+.storm=nope
+`,
+    		"2020-07-23": "july"
     	};
 
     	setContext("data", data);
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<App> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$3.warn(`<App> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
@@ -5525,6 +5705,7 @@ var app = (function () {
 
     	$$self.$capture_state = () => ({
     		Week,
+    		Pouch,
     		value,
     		keys,
     		onType,
@@ -5548,13 +5729,13 @@ var app = (function () {
     class App extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$3, create_fragment$3, safe_not_equal, {});
+    		init(this, options, instance$4, create_fragment$4, safe_not_equal, {});
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
     			tagName: "App",
     			options,
-    			id: create_fragment$3.name
+    			id: create_fragment$4.name
     		});
     	}
     }

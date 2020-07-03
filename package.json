@@ -30,6 +30,9 @@
     "svelte-preprocess": "^3.7.4"
   },
   "dependencies": {
+    "pouchdb-browser": "^7.2.1",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0",
     "spacetime": "^6.6.0",
     "spencer-color": "^0.1.0"
   }
