@@ -1,20 +1,19 @@
 <script>
   import Day from './Day.svelte'
-  import { setContext } from 'svelte'
   import { read, write } from './01-couch'
-  import { writable } from 'svelte/store'
   import spacetime from 'spacetime'
   export let user = 'username'
+  import { data } from './store'
   // export let pass = ''
 
-  export let data = writable({
+  $data = {
     _id: user,
-  })
+    dates: {},
+  }
 
   // import './02-encrypt.js'
 
   read(user).then(doc => {
-    // console.log(doc)
     $data = doc
   })
   // initial set data
@@ -25,15 +24,22 @@
   }
   const writeNow = async function() {
     data.update(val => {
-      // console.log(val)
       let res = write(val)
       console.log('wrote')
       console.log(res)
       return val
     })
   }
-  // })
+
+  data.subscribe(val => {
+    // console.log('-subscribe-')
+    // writeNow()
+  })
+
   let date = spacetime.today().format('iso-short')
+
+  const goBack = function() {}
+  const goNext = function() {}
 </script>
 
 <style>
@@ -47,6 +53,8 @@
   <pre>{JSON.stringify($data, null, 2)}</pre>
   <button on:click={writeNow}>writeNow</button>
   <div class="m3">
-    <Day {date} />
+    <button on:click={goBack}>&lt;</button>
+    <Day {date} write={writeNow} />
+    <button on:click={goNext}>&gt;</button>
   </div>
 </div>
