@@ -3,7 +3,7 @@
   import { read, write } from './01-couch'
   import spacetime from 'spacetime'
   export let user = 'username'
-  import { data } from './store'
+  import { data, date } from './store'
   // export let pass = ''
 
   $data = {
@@ -36,10 +36,18 @@
     // writeNow()
   })
 
-  let date = spacetime.today().format('iso-short')
-
-  const goBack = function() {}
-  const goNext = function() {}
+  const goBack = function() {
+    date.update(fmt => {
+      let d = spacetime(fmt).minus(1, 'day')
+      return d.format('iso-short')
+    })
+  }
+  const goNext = function() {
+    date.update(fmt => {
+      let d = spacetime(fmt).add(1, 'day')
+      return d.format('iso-short')
+    })
+  }
 </script>
 
 <style>
@@ -52,9 +60,9 @@
   <button on:click={onClick}>update</button>
   <pre>{JSON.stringify($data, null, 2)}</pre>
   <button on:click={writeNow}>writeNow</button>
-  <div class="m3">
+  <div class="m3 row nowrap">
     <button on:click={goBack}>&lt;</button>
-    <Day {date} write={writeNow} />
+    <Day write={writeNow} />
     <button on:click={goNext}>&gt;</button>
   </div>
 </div>
