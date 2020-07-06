@@ -1,50 +1,27 @@
 <script>
   import Day from './02-Day.svelte'
-  import { read, write } from './lib/01-couch'
-  import spacetime from 'spacetime'
-  import { data, date, user } from './store'
-
-  $data = {
-    _id: $user,
-    dates: {},
-  }
-
-  read($user).then(doc => {
-    $data = doc
-  })
+  import { getUser, saveUser } from './couch/index.js'
+  import { data, date, user, pass } from './store'
 
   // listen for username changes
   user.subscribe(val => {
-    console.log(val)
-    read(val).then(doc => {
+    getUser($user, $pass).then(doc => {
       $data = doc
     })
   })
 
-  const writeNow = async function() {
-    data.update(val => {
-      let res = write(val)
-      console.log('wrote')
-      console.log(res)
-      return val
-    })
+  const writeNow = function() {
+    saveUser($data, $pass)
   }
 
-  const goBack = function() {
-    date.update(d => {
-      return d.minus(1, 'day')
-    })
-  }
-  const goNext = function() {
-    date.update(d => {
-      return d.add(1, 'day')
-    })
-  }
+  const goBack = () => date.update(d => d.minus(1, 'day'))
+  const goNext = () => date.update(d => d.add(1, 'day'))
 </script>
 
 <style>
   pre {
     color: white;
+    max-width: 20rem;
   }
 </style>
 

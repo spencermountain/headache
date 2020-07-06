@@ -1,19 +1,19 @@
 import App from './src/App.svelte'
 
-let user = undefined
+let u = undefined
 // wire-in query params
 const URLSearchParams = window.URLSearchParams
 if (typeof URLSearchParams !== undefined) {
   const urlParams = new URLSearchParams(window.location.search)
-  const myParam = urlParams.get('user')
+  const myParam = urlParams.get('u')
   if (myParam) {
-    user = myParam
+    u = myParam
   }
 }
 
 const app = new App({
   target: document.body,
-  props: { user: user },
+  props: { u: u },
 })
 
 export default app

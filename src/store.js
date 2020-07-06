@@ -1,11 +1,15 @@
 import { writable } from 'svelte/store'
 import spacetime from 'spacetime'
 
-let data = writable({})
+let tmp = 'username'
+let user = writable(tmp)
+let pass = writable('foo')
+
+let data = writable({
+  _id: tmp,
+  dates: {},
+})
 
 let date = writable(spacetime.today())
-
-let user = writable('username')
-let pass = writable('')
 
 export { data, date, user, pass }

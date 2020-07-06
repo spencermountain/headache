@@ -6,7 +6,8 @@ const read = async function (id) {
     return await db.get(id)
   } catch (e) {
     console.log(e)
-    return { username: id, dates: {} }
+    alert(`username ${id} not found`) //eslint-disable-line
+    return null
   }
 }
 
@@ -14,6 +15,7 @@ const read = async function (id) {
 const write = async function (obj) {
   if (!obj._id) {
     console.warn('object needs a _id')
+    // alert('username not found') //eslint-disable-line
     return {}
   }
   let doc = {}
