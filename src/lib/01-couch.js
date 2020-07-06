@@ -2,14 +2,19 @@ window.global = window
 let db = new PouchDB('http://34.86.136.15:5984/headache') //eslint-disable-line
 
 const read = async function (id) {
-  return await db.get(id)
+  try {
+    return await db.get(id)
+  } catch (e) {
+    console.log(e)
+    return { username: id, dates: {} }
+  }
 }
 
 // 'upsert'
 const write = async function (obj) {
   if (!obj._id) {
     console.warn('object needs a _id')
-    return new Promise()
+    return {}
   }
   let doc = {}
   let latest = null

@@ -1,11 +1,12 @@
 <script>
   import { onMount } from 'svelte'
   import { data, date } from './store'
-  import resizable from './_resizable'
   import debounce from 'lodash/debounce'
   import spacetime from 'spacetime'
+  import resizable from './lib/_resizable'
   export let write = () => {}
   let value = 'empty'
+  let fmt = $date.format('iso-short')
 
   // make it resizable
   let el
@@ -15,16 +16,17 @@
   })
 
   data.subscribe(val => {
-    value = val.dates[$date]
+    value = val.dates[fmt]
   })
   date.subscribe(d => {
-    value = $data.dates[d]
+    fmt = $date.format('iso-short')
+    value = $data.dates[fmt]
   })
 
   // send update to server
   const didChange = debounce(e => {
     data.update(val => {
-      val.dates[$date] = value
+      val.dates[fmt] = value
       write()
       return val
     })
@@ -43,7 +45,7 @@
     class="textarea"
     spellcheck="false"
     resizable="false"
-    bind:value={$data.dates[$date]}
+    bind:value={$data.dates[fmt]}
     on:input={didChange}
     bind:this={el} />
 

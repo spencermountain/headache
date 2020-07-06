@@ -3,6 +3,9 @@ import spacetime from 'spacetime'
 
 let data = writable({})
 
-let fmt = spacetime.today().format('iso-short')
-let date = writable(fmt)
-export { data, date }
+let date = writable(spacetime.today())
+
+let user = writable('username')
+let pass = writable('')
+
+export { data, date, user, pass }
