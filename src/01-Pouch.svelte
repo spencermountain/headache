@@ -1,5 +1,6 @@
 <script>
   import Day from './02-Day.svelte'
+  import Week from './Week.svelte'
   import { getUser, saveUser } from './couch/index.js'
   import { data, date, user, pass } from './store'
 
@@ -32,4 +33,5 @@
     <Day write={writeNow} />
     <button on:click={goNext}>&gt;</button>
   </div>
+  <Week />
 </div>
