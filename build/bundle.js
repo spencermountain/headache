@@ -24,6 +24,22 @@ var app = (function () {
     function safe_not_equal(a, b) {
         return a != a ? b == b : a !== b || ((a && typeof a === 'object') || typeof a === 'function');
     }
+    function validate_store(store, name) {
+        if (store != null && typeof store.subscribe !== 'function') {
+            throw new Error(`'${name}' is not a store with a 'subscribe' method`);
+        }
+    }
+    function subscribe(store, ...callbacks) {
+        if (store == null) {
+            return noop;
+        }
+        const unsub = store.subscribe(...callbacks);
+        return unsub.unsubscribe ? () => unsub.unsubscribe() : unsub;
+    }
+    function set_store_value(store, ret, value = ret) {
+        store.set(value);
+        return ret;
+    }
 
     function append(target, node) {
         target.appendChild(node);
@@ -33,12 +49,6 @@ var app = (function () {
     }
     function detach(node) {
         node.parentNode.removeChild(node);
-    }
-    function destroy_each(iterations, detaching) {
-        for (let i = 0; i < iterations.length; i += 1) {
-            if (iterations[i])
-                iterations[i].d(detaching);
-        }
     }
     function element(name) {
         return document.createElement(name);
@@ -65,12 +75,6 @@ var app = (function () {
     function set_input_value(input, value) {
         input.value = value == null ? '' : value;
     }
-    function set_style(node, key, value, important) {
-        node.style.setProperty(key, value, important ? 'important' : '');
-    }
-    function toggle_class(element, name, toggle) {
-        element.classList[toggle ? 'add' : 'remove'](name);
-    }
     function custom_event(type, detail) {
         const e = document.createEvent('CustomEvent');
         e.initCustomEvent(type, false, false, detail);
@@ -91,9 +95,6 @@ var app = (function () {
     }
     function setContext(key, context) {
         get_current_component().$$.context.set(key, context);
-    }
-    function getContext(key) {
-        return get_current_component().$$.context.get(key);
     }
 
     const dirty_components = [];
@@ -163,19 +164,6 @@ var app = (function () {
     }
     const outroing = new Set();
     let outros;
-    function group_outros() {
-        outros = {
-            r: 0,
-            c: [],
-            p: outros // parent group
-        };
-    }
-    function check_outros() {
-        if (!outros.r) {
-            run_all(outros.c);
-        }
-        outros = outros.p;
-    }
     function transition_in(block, local) {
         if (block && block.i) {
             outroing.delete(block);
@@ -371,15 +359,6 @@ var app = (function () {
         dispatch_dev("SvelteDOMSetData", { node: text, data });
         text.data = data;
     }
-    function validate_each_argument(arg) {
-        if (typeof arg !== 'string' && !(arg && typeof arg === 'object' && 'length' in arg)) {
-            let msg = '{#each} only iterates over array-like objects.';
-            if (typeof Symbol === 'function' && arg && Symbol.iterator in arg) {
-                msg += ' You can use a spread to convert this iterable into an array.';
-            }
-            throw new Error(msg);
-        }
-    }
     function validate_slots(name, slot, keys) {
         for (const slot_key of Object.keys(slot)) {
             if (!~keys.indexOf(slot_key)) {
@@ -403,6 +382,496 @@ var app = (function () {
         $capture_state() { }
         $inject_state() { }
     }
+
+    function resize({ target }) {
+      target.style.height = '1px';
+      target.style.height = +target.scrollHeight + 'px';
+    }
+    function resizable(el) {
+      resize({ target: el });
+      el.style.overflow = 'hidden';
+      el.addEventListener('input', resize);
+
+      return {
+        destroy: () => el.removeEventListener('input', resize),
+      }
+    }
+
+    /**
+     * Checks if `value` is the
+     * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+     * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+     *
+     * @static
+     * @memberOf _
+     * @since 0.1.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+     * @example
+     *
+     * _.isObject({});
+     * // => true
+     *
+     * _.isObject([1, 2, 3]);
+     * // => true
+     *
+     * _.isObject(_.noop);
+     * // => true
+     *
+     * _.isObject(null);
+     * // => false
+     */
+    function isObject(value) {
+      var type = typeof value;
+      return value != null && (type == 'object' || type == 'function');
+    }
+
+    var isObject_1 = isObject;
+
+    var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+    /** Detect free variable `global` from Node.js. */
+    var freeGlobal = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+
+    var _freeGlobal = freeGlobal;
+
+    /** Detect free variable `self`. */
+    var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+    /** Used as a reference to the global object. */
+    var root = _freeGlobal || freeSelf || Function('return this')();
+
+    var _root = root;
+
+    /**
+     * Gets the timestamp of the number of milliseconds that have elapsed since
+     * the Unix epoch (1 January 1970 00:00:00 UTC).
+     *
+     * @static
+     * @memberOf _
+     * @since 2.4.0
+     * @category Date
+     * @returns {number} Returns the timestamp.
+     * @example
+     *
+     * _.defer(function(stamp) {
+     *   console.log(_.now() - stamp);
+     * }, _.now());
+     * // => Logs the number of milliseconds it took for the deferred invocation.
+     */
+    var now = function() {
+      return _root.Date.now();
+    };
+
+    var now_1 = now;
+
+    /** Built-in value references. */
+    var Symbol = _root.Symbol;
+
+    var _Symbol = Symbol;
+
+    /** Used for built-in method references. */
+    var objectProto = Object.prototype;
+
+    /** Used to check objects for own properties. */
+    var hasOwnProperty = objectProto.hasOwnProperty;
+
+    /**
+     * Used to resolve the
+     * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+     * of values.
+     */
+    var nativeObjectToString = objectProto.toString;
+
+    /** Built-in value references. */
+    var symToStringTag = _Symbol ? _Symbol.toStringTag : undefined;
+
+    /**
+     * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
+     *
+     * @private
+     * @param {*} value The value to query.
+     * @returns {string} Returns the raw `toStringTag`.
+     */
+    function getRawTag(value) {
+      var isOwn = hasOwnProperty.call(value, symToStringTag),
+          tag = value[symToStringTag];
+
+      try {
+        value[symToStringTag] = undefined;
+        var unmasked = true;
+      } catch (e) {}
+
+      var result = nativeObjectToString.call(value);
+      if (unmasked) {
+        if (isOwn) {
+          value[symToStringTag] = tag;
+        } else {
+          delete value[symToStringTag];
+        }
+      }
+      return result;
+    }
+
+    var _getRawTag = getRawTag;
+
+    /** Used for built-in method references. */
+    var objectProto$1 = Object.prototype;
+
+    /**
+     * Used to resolve the
+     * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+     * of values.
+     */
+    var nativeObjectToString$1 = objectProto$1.toString;
+
+    /**
+     * Converts `value` to a string using `Object.prototype.toString`.
+     *
+     * @private
+     * @param {*} value The value to convert.
+     * @returns {string} Returns the converted string.
+     */
+    function objectToString(value) {
+      return nativeObjectToString$1.call(value);
+    }
+
+    var _objectToString = objectToString;
+
+    /** `Object#toString` result references. */
+    var nullTag = '[object Null]',
+        undefinedTag = '[object Undefined]';
+
+    /** Built-in value references. */
+    var symToStringTag$1 = _Symbol ? _Symbol.toStringTag : undefined;
+
+    /**
+     * The base implementation of `getTag` without fallbacks for buggy environments.
+     *
+     * @private
+     * @param {*} value The value to query.
+     * @returns {string} Returns the `toStringTag`.
+     */
+    function baseGetTag(value) {
+      if (value == null) {
+        return value === undefined ? undefinedTag : nullTag;
+      }
+      return (symToStringTag$1 && symToStringTag$1 in Object(value))
+        ? _getRawTag(value)
+        : _objectToString(value);
+    }
+
+    var _baseGetTag = baseGetTag;
+
+    /**
+     * Checks if `value` is object-like. A value is object-like if it's not `null`
+     * and has a `typeof` result of "object".
+     *
+     * @static
+     * @memberOf _
+     * @since 4.0.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+     * @example
+     *
+     * _.isObjectLike({});
+     * // => true
+     *
+     * _.isObjectLike([1, 2, 3]);
+     * // => true
+     *
+     * _.isObjectLike(_.noop);
+     * // => false
+     *
+     * _.isObjectLike(null);
+     * // => false
+     */
+    function isObjectLike(value) {
+      return value != null && typeof value == 'object';
+    }
+
+    var isObjectLike_1 = isObjectLike;
+
+    /** `Object#toString` result references. */
+    var symbolTag = '[object Symbol]';
+
+    /**
+     * Checks if `value` is classified as a `Symbol` primitive or object.
+     *
+     * @static
+     * @memberOf _
+     * @since 4.0.0
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+     * @example
+     *
+     * _.isSymbol(Symbol.iterator);
+     * // => true
+     *
+     * _.isSymbol('abc');
+     * // => false
+     */
+    function isSymbol(value) {
+      return typeof value == 'symbol' ||
+        (isObjectLike_1(value) && _baseGetTag(value) == symbolTag);
+    }
+
+    var isSymbol_1 = isSymbol;
+
+    /** Used as references for various `Number` constants. */
+    var NAN = 0 / 0;
+
+    /** Used to match leading and trailing whitespace. */
+    var reTrim = /^\s+|\s+$/g;
+
+    /** Used to detect bad signed hexadecimal string values. */
+    var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+
+    /** Used to detect binary string values. */
+    var reIsBinary = /^0b[01]+$/i;
+
+    /** Used to detect octal string values. */
+    var reIsOctal = /^0o[0-7]+$/i;
+
+    /** Built-in method references without a dependency on `root`. */
+    var freeParseInt = parseInt;
+
+    /**
+     * Converts `value` to a number.
+     *
+     * @static
+     * @memberOf _
+     * @since 4.0.0
+     * @category Lang
+     * @param {*} value The value to process.
+     * @returns {number} Returns the number.
+     * @example
+     *
+     * _.toNumber(3.2);
+     * // => 3.2
+     *
+     * _.toNumber(Number.MIN_VALUE);
+     * // => 5e-324
+     *
+     * _.toNumber(Infinity);
+     * // => Infinity
+     *
+     * _.toNumber('3.2');
+     * // => 3.2
+     */
+    function toNumber(value) {
+      if (typeof value == 'number') {
+        return value;
+      }
+      if (isSymbol_1(value)) {
+        return NAN;
+      }
+      if (isObject_1(value)) {
+        var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
+        value = isObject_1(other) ? (other + '') : other;
+      }
+      if (typeof value != 'string') {
+        return value === 0 ? value : +value;
+      }
+      value = value.replace(reTrim, '');
+      var isBinary = reIsBinary.test(value);
+      return (isBinary || reIsOctal.test(value))
+        ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
+        : (reIsBadHex.test(value) ? NAN : +value);
+    }
+
+    var toNumber_1 = toNumber;
+
+    /** Error message constants. */
+    var FUNC_ERROR_TEXT = 'Expected a function';
+
+    /* Built-in method references for those with the same name as other `lodash` methods. */
+    var nativeMax = Math.max,
+        nativeMin = Math.min;
+
+    /**
+     * Creates a debounced function that delays invoking `func` until after `wait`
+     * milliseconds have elapsed since the last time the debounced function was
+     * invoked. The debounced function comes with a `cancel` method to cancel
+     * delayed `func` invocations and a `flush` method to immediately invoke them.
+     * Provide `options` to indicate whether `func` should be invoked on the
+     * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
+     * with the last arguments provided to the debounced function. Subsequent
+     * calls to the debounced function return the result of the last `func`
+     * invocation.
+     *
+     * **Note:** If `leading` and `trailing` options are `true`, `func` is
+     * invoked on the trailing edge of the timeout only if the debounced function
+     * is invoked more than once during the `wait` timeout.
+     *
+     * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+     * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+     *
+     * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+     * for details over the differences between `_.debounce` and `_.throttle`.
+     *
+     * @static
+     * @memberOf _
+     * @since 0.1.0
+     * @category Function
+     * @param {Function} func The function to debounce.
+     * @param {number} [wait=0] The number of milliseconds to delay.
+     * @param {Object} [options={}] The options object.
+     * @param {boolean} [options.leading=false]
+     *  Specify invoking on the leading edge of the timeout.
+     * @param {number} [options.maxWait]
+     *  The maximum time `func` is allowed to be delayed before it's invoked.
+     * @param {boolean} [options.trailing=true]
+     *  Specify invoking on the trailing edge of the timeout.
+     * @returns {Function} Returns the new debounced function.
+     * @example
+     *
+     * // Avoid costly calculations while the window size is in flux.
+     * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+     *
+     * // Invoke `sendMail` when clicked, debouncing subsequent calls.
+     * jQuery(element).on('click', _.debounce(sendMail, 300, {
+     *   'leading': true,
+     *   'trailing': false
+     * }));
+     *
+     * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
+     * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
+     * var source = new EventSource('/stream');
+     * jQuery(source).on('message', debounced);
+     *
+     * // Cancel the trailing debounced invocation.
+     * jQuery(window).on('popstate', debounced.cancel);
+     */
+    function debounce(func, wait, options) {
+      var lastArgs,
+          lastThis,
+          maxWait,
+          result,
+          timerId,
+          lastCallTime,
+          lastInvokeTime = 0,
+          leading = false,
+          maxing = false,
+          trailing = true;
+
+      if (typeof func != 'function') {
+        throw new TypeError(FUNC_ERROR_TEXT);
+      }
+      wait = toNumber_1(wait) || 0;
+      if (isObject_1(options)) {
+        leading = !!options.leading;
+        maxing = 'maxWait' in options;
+        maxWait = maxing ? nativeMax(toNumber_1(options.maxWait) || 0, wait) : maxWait;
+        trailing = 'trailing' in options ? !!options.trailing : trailing;
+      }
+
+      function invokeFunc(time) {
+        var args = lastArgs,
+            thisArg = lastThis;
+
+        lastArgs = lastThis = undefined;
+        lastInvokeTime = time;
+        result = func.apply(thisArg, args);
+        return result;
+      }
+
+      function leadingEdge(time) {
+        // Reset any `maxWait` timer.
+        lastInvokeTime = time;
+        // Start the timer for the trailing edge.
+        timerId = setTimeout(timerExpired, wait);
+        // Invoke the leading edge.
+        return leading ? invokeFunc(time) : result;
+      }
+
+      function remainingWait(time) {
+        var timeSinceLastCall = time - lastCallTime,
+            timeSinceLastInvoke = time - lastInvokeTime,
+            timeWaiting = wait - timeSinceLastCall;
+
+        return maxing
+          ? nativeMin(timeWaiting, maxWait - timeSinceLastInvoke)
+          : timeWaiting;
+      }
+
+      function shouldInvoke(time) {
+        var timeSinceLastCall = time - lastCallTime,
+            timeSinceLastInvoke = time - lastInvokeTime;
+
+        // Either this is the first call, activity has stopped and we're at the
+        // trailing edge, the system time has gone backwards and we're treating
+        // it as the trailing edge, or we've hit the `maxWait` limit.
+        return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
+          (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
+      }
+
+      function timerExpired() {
+        var time = now_1();
+        if (shouldInvoke(time)) {
+          return trailingEdge(time);
+        }
+        // Restart the timer.
+        timerId = setTimeout(timerExpired, remainingWait(time));
+      }
+
+      function trailingEdge(time) {
+        timerId = undefined;
+
+        // Only invoke if we have `lastArgs` which means `func` has been
+        // debounced at least once.
+        if (trailing && lastArgs) {
+          return invokeFunc(time);
+        }
+        lastArgs = lastThis = undefined;
+        return result;
+      }
+
+      function cancel() {
+        if (timerId !== undefined) {
+          clearTimeout(timerId);
+        }
+        lastInvokeTime = 0;
+        lastArgs = lastCallTime = lastThis = timerId = undefined;
+      }
+
+      function flush() {
+        return timerId === undefined ? result : trailingEdge(now_1());
+      }
+
+      function debounced() {
+        var time = now_1(),
+            isInvoking = shouldInvoke(time);
+
+        lastArgs = arguments;
+        lastThis = this;
+        lastCallTime = time;
+
+        if (isInvoking) {
+          if (timerId === undefined) {
+            return leadingEdge(lastCallTime);
+          }
+          if (maxing) {
+            // Handle invocations in a tight loop.
+            clearTimeout(timerId);
+            timerId = setTimeout(timerExpired, wait);
+            return invokeFunc(lastCallTime);
+          }
+        }
+        if (timerId === undefined) {
+          timerId = setTimeout(timerExpired, wait);
+        }
+        return result;
+      }
+      debounced.cancel = cancel;
+      debounced.flush = flush;
+      return debounced;
+    }
+
+    var debounce_1 = debounce;
 
     /* spencermountain/spacetime 6.6.0 Apache 2.0 */
     function createCommonjsModule(fn, module) {
@@ -4487,25 +4956,6 @@ var app = (function () {
     main$1.plugin = main$1.extend;
     var src = main$1;
 
-    const parse = function (txt) {
-      let lines = txt.split(/\n/).map((text) => {
-        let data = text.match(/\[.*?\]/g);
-        data = data.map((part) => {
-          let m = part.match(/\[(.*?):(.*?)\]/);
-          return {
-            key: m[1],
-            val: m[2],
-          }
-        });
-        return {
-          text: text,
-          data: data,
-        }
-      });
-      return lines
-    };
-    var parse_1 = parse;
-
     /* src/Day.svelte generated by Svelte v3.23.0 */
 
     const { console: console_1 } = globals;
@@ -4514,8 +4964,6 @@ var app = (function () {
     function create_fragment(ctx) {
     	let div1;
     	let div0;
-    	let t0_value = /*date*/ ctx[0].format("{day-short} {month-short} {date}") + "";
-    	let t0;
     	let t1;
     	let textarea;
     	let mounted;
@@ -4525,19 +4973,17 @@ var app = (function () {
     		c: function create() {
     			div1 = element("div");
     			div0 = element("div");
-    			t0 = text(t0_value);
+    			div0.textContent = `${/*d*/ ctx[2].format("{day-short} {month-short} {date}")}`;
     			t1 = space();
     			textarea = element("textarea");
-    			attr_dev(div0, "class", "title svelte-ycejwd");
-    			toggle_class(div0, "today", /*isToday*/ ctx[4]);
-    			add_location(div0, file, 93, 2, 2081);
-    			attr_dev(textarea, "class", "textarea svelte-ycejwd");
+    			attr_dev(div0, "class", "title");
+    			add_location(div0, file, 31, 2, 533);
+    			attr_dev(textarea, "class", "textarea");
     			attr_dev(textarea, "spellcheck", "false");
     			attr_dev(textarea, "resizable", "false");
-    			toggle_class(textarea, "weekend", /*isWeekend*/ ctx[5]);
-    			add_location(textarea, file, 94, 2, 2180);
-    			attr_dev(div1, "class", "container svelte-ycejwd");
-    			add_location(div1, file, 92, 0, 2055);
+    			add_location(textarea, file, 32, 2, 607);
+    			attr_dev(div1, "class", "container svelte-12lphu5");
+    			add_location(div1, file, 30, 0, 507);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4545,51 +4991,30 @@ var app = (function () {
     		m: function mount(target, anchor) {
     			insert_dev(target, div1, anchor);
     			append_dev(div1, div0);
-    			append_dev(div0, t0);
     			append_dev(div1, t1);
     			append_dev(div1, textarea);
-    			set_input_value(textarea, /*value*/ ctx[2]);
-    			/*textarea_binding*/ ctx[11](textarea);
+    			set_input_value(textarea, /*value*/ ctx[0]);
+    			/*textarea_binding*/ ctx[6](textarea);
 
     			if (!mounted) {
     				dispose = [
-    					listen_dev(textarea, "input", /*textarea_input_handler*/ ctx[10]),
-    					listen_dev(
-    						textarea,
-    						"input",
-    						function () {
-    							if (is_function(/*onInput*/ ctx[1])) /*onInput*/ ctx[1].apply(this, arguments);
-    						},
-    						false,
-    						false,
-    						false
-    					)
+    					listen_dev(textarea, "input", /*textarea_input_handler*/ ctx[5]),
+    					listen_dev(textarea, "input", /*didChange*/ ctx[3], false, false, false)
     				];
 
     				mounted = true;
     			}
     		},
-    		p: function update(new_ctx, [dirty]) {
-    			ctx = new_ctx;
-    			if (dirty & /*date*/ 1 && t0_value !== (t0_value = /*date*/ ctx[0].format("{day-short} {month-short} {date}") + "")) set_data_dev(t0, t0_value);
-
-    			if (dirty & /*isToday*/ 16) {
-    				toggle_class(div0, "today", /*isToday*/ ctx[4]);
-    			}
-
-    			if (dirty & /*value*/ 4) {
-    				set_input_value(textarea, /*value*/ ctx[2]);
-    			}
-
-    			if (dirty & /*isWeekend*/ 32) {
-    				toggle_class(textarea, "weekend", /*isWeekend*/ ctx[5]);
+    		p: function update(ctx, [dirty]) {
+    			if (dirty & /*value*/ 1) {
+    				set_input_value(textarea, /*value*/ ctx[0]);
     			}
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div1);
-    			/*textarea_binding*/ ctx[11](null);
+    			/*textarea_binding*/ ctx[6](null);
     			mounted = false;
     			run_all(dispose);
     		}
@@ -4606,50 +5031,29 @@ var app = (function () {
     	return block;
     }
 
-    function resize({ target }) {
-    	target.style.height = "1px";
-    	target.style.height = +target.scrollHeight + "px";
-    }
-
-    function text_area_resize(el) {
-    	resize({ target: el });
-    	el.style.overflow = "hidden";
-    	el.addEventListener("input", resize);
-
-    	return {
-    		destroy: () => el.removeEventListener("input", resize)
-    	};
-    }
-
     function instance($$self, $$props, $$invalidate) {
     	let { date = "" } = $$props;
-    	let allData = getContext("data") || {};
-    	let now = src.now();
-    	let iso = date.format("iso-short");
-    	let value = allData[iso] || "";
+    	let d = src(date);
+    	let value = "";
 
-    	let { onInput = () => {
-    		let res = parse_1(value);
-    		callback(res);
-    	} } = $$props;
-
-    	let isToday = date.isSame(now, "day");
-
-    	// let isBefore = date.isBefore(now) && !isToday
-    	let isWeekend = date.dayName() === "saturday" || date.dayName() === "sunday";
-
+    	// make it resizable
     	let el;
 
     	onMount(() => {
-    		if (isToday) {
-    			console.log("here");
-    			el.focus();
-    		}
-
-    		text_area_resize(el);
+    		el.focus();
+    		resizable(el);
     	});
 
-    	const writable_props = ["date", "onInput"];
+    	// send update to server
+    	const didChange = debounce_1(
+    		e => {
+    			console.log("did change");
+    			console.log(val);
+    		},
+    		750
+    	);
+
+    	const writable_props = ["date"];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1.warn(`<Day> was created with unknown prop '${key}'`);
@@ -4660,74 +5064,49 @@ var app = (function () {
 
     	function textarea_input_handler() {
     		value = this.value;
-    		$$invalidate(2, value);
+    		$$invalidate(0, value);
     	}
 
     	function textarea_binding($$value) {
     		binding_callbacks[$$value ? "unshift" : "push"](() => {
-    			$$invalidate(3, el = $$value);
+    			$$invalidate(1, el = $$value);
     		});
     	}
 
     	$$self.$set = $$props => {
-    		if ("date" in $$props) $$invalidate(0, date = $$props.date);
-    		if ("onInput" in $$props) $$invalidate(1, onInput = $$props.onInput);
+    		if ("date" in $$props) $$invalidate(4, date = $$props.date);
     	};
 
     	$$self.$capture_state = () => ({
     		onMount,
+    		resizable,
+    		debounce: debounce_1,
     		spacetime: src,
-    		parse: parse_1,
-    		getContext,
     		date,
-    		allData,
-    		now,
-    		iso,
+    		d,
     		value,
-    		onInput,
-    		isToday,
-    		isWeekend,
     		el,
-    		resize,
-    		text_area_resize
+    		didChange
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("date" in $$props) $$invalidate(0, date = $$props.date);
-    		if ("allData" in $$props) allData = $$props.allData;
-    		if ("now" in $$props) now = $$props.now;
-    		if ("iso" in $$props) iso = $$props.iso;
-    		if ("value" in $$props) $$invalidate(2, value = $$props.value);
-    		if ("onInput" in $$props) $$invalidate(1, onInput = $$props.onInput);
-    		if ("isToday" in $$props) $$invalidate(4, isToday = $$props.isToday);
-    		if ("isWeekend" in $$props) $$invalidate(5, isWeekend = $$props.isWeekend);
-    		if ("el" in $$props) $$invalidate(3, el = $$props.el);
+    		if ("date" in $$props) $$invalidate(4, date = $$props.date);
+    		if ("d" in $$props) $$invalidate(2, d = $$props.d);
+    		if ("value" in $$props) $$invalidate(0, value = $$props.value);
+    		if ("el" in $$props) $$invalidate(1, el = $$props.el);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [
-    		date,
-    		onInput,
-    		value,
-    		el,
-    		isToday,
-    		isWeekend,
-    		text_area_resize,
-    		allData,
-    		now,
-    		iso,
-    		textarea_input_handler,
-    		textarea_binding
-    	];
+    	return [value, el, d, didChange, date, textarea_input_handler, textarea_binding];
     }
 
     class Day extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance, create_fragment, safe_not_equal, { date: 0, onInput: 1, text_area_resize: 6 });
+    		init(this, options, instance, create_fragment, safe_not_equal, { date: 4 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -4744,322 +5123,177 @@ var app = (function () {
     	set date(value) {
     		throw new Error("<Day>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
-
-    	get onInput() {
-    		throw new Error("<Day>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-    	}
-
-    	set onInput(value) {
-    		throw new Error("<Day>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-    	}
-
-    	get text_area_resize() {
-    		return text_area_resize;
-    	}
-
-    	set text_area_resize(value) {
-    		throw new Error("<Day>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-    	}
     }
 
-    /* src/Year.svelte generated by Svelte v3.23.0 */
+    window.global = window;
+    let db = new PouchDB('http://34.86.136.15:5984/headache'); //eslint-disable-line
+
+    const read = async function (id) {
+      return await db.get(id)
+    };
+
+    // 'upsert'
+    const write = async function (obj) {
+      if (!obj._id) {
+        console.warn('object needs a _id');
+        return new Promise()
+      }
+      let doc = {};
+      let latest = null;
+      try {
+        doc = await db.get(obj._id);
+        latest = doc._rev;
+        console.log('updating date');
+      } catch (e) {
+        console.log('inserting new date');
+      }
+      obj = Object.assign(doc, obj);
+      obj._rev = latest;
+      let res = await db.put(obj);
+      return res
+    };
+
+    const subscriber_queue = [];
+    /**
+     * Create a `Writable` store that allows both updating and reading by subscription.
+     * @param {*=}value initial value
+     * @param {StartStopNotifier=}start start and stop notifications for subscriptions
+     */
+    function writable(value, start = noop) {
+        let stop;
+        const subscribers = [];
+        function set(new_value) {
+            if (safe_not_equal(value, new_value)) {
+                value = new_value;
+                if (stop) { // store is ready
+                    const run_queue = !subscriber_queue.length;
+                    for (let i = 0; i < subscribers.length; i += 1) {
+                        const s = subscribers[i];
+                        s[1]();
+                        subscriber_queue.push(s, value);
+                    }
+                    if (run_queue) {
+                        for (let i = 0; i < subscriber_queue.length; i += 2) {
+                            subscriber_queue[i][0](subscriber_queue[i + 1]);
+                        }
+                        subscriber_queue.length = 0;
+                    }
+                }
+            }
+        }
+        function update(fn) {
+            set(fn(value));
+        }
+        function subscribe(run, invalidate = noop) {
+            const subscriber = [run, invalidate];
+            subscribers.push(subscriber);
+            if (subscribers.length === 1) {
+                stop = start(set) || noop;
+            }
+            run(value);
+            return () => {
+                const index = subscribers.indexOf(subscriber);
+                if (index !== -1) {
+                    subscribers.splice(index, 1);
+                }
+                if (subscribers.length === 0) {
+                    stop();
+                    stop = null;
+                }
+            };
+        }
+        return { set, update, subscribe };
+    }
+
+    /* src/Pouch.svelte generated by Svelte v3.23.0 */
 
     const { console: console_1$1 } = globals;
-    const file$1 = "src/Year.svelte";
-
-    function get_each_context(ctx, list, i) {
-    	const child_ctx = ctx.slice();
-    	child_ctx[5] = list[i];
-    	return child_ctx;
-    }
-
-    // (55:2) {#each weeks as w}
-    function create_each_block(ctx) {
-    	let div7;
-    	let div0;
-    	let t0;
-    	let div1;
-    	let t1;
-    	let div2;
-    	let t2;
-    	let div3;
-    	let t3;
-    	let div4;
-    	let t4;
-    	let div5;
-    	let t5;
-    	let div6;
-    	let t6;
-
-    	const block = {
-    		c: function create() {
-    			div7 = element("div");
-    			div0 = element("div");
-    			t0 = space();
-    			div1 = element("div");
-    			t1 = space();
-    			div2 = element("div");
-    			t2 = space();
-    			div3 = element("div");
-    			t3 = space();
-    			div4 = element("div");
-    			t4 = space();
-    			div5 = element("div");
-    			t5 = space();
-    			div6 = element("div");
-    			t6 = space();
-    			attr_dev(div0, "class", "day svelte-1x1zvfc");
-    			set_style(div0, "border", "1px solid " + /*w*/ ctx[5].colors[0]);
-    			set_style(div0, "opacity", /*w*/ ctx[5].opacity);
-    			set_style(div0, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[0] : "none");
-    			add_location(div0, file$1, 56, 6, 1245);
-    			attr_dev(div1, "class", "day svelte-1x1zvfc");
-    			set_style(div1, "border", "1px solid " + /*w*/ ctx[5].colors[1]);
-    			set_style(div1, "opacity", /*w*/ ctx[5].opacity);
-    			set_style(div1, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[1] : "none");
-    			add_location(div1, file$1, 59, 6, 1398);
-    			attr_dev(div2, "class", "day svelte-1x1zvfc");
-    			set_style(div2, "border", "1px solid " + /*w*/ ctx[5].colors[2]);
-    			set_style(div2, "opacity", /*w*/ ctx[5].opacity);
-    			set_style(div2, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[2] : "none");
-    			add_location(div2, file$1, 62, 6, 1551);
-    			attr_dev(div3, "class", "day svelte-1x1zvfc");
-    			set_style(div3, "border", "1px solid " + /*w*/ ctx[5].colors[3]);
-    			set_style(div3, "opacity", /*w*/ ctx[5].opacity);
-    			set_style(div3, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[3] : "none");
-    			add_location(div3, file$1, 65, 6, 1704);
-    			attr_dev(div4, "class", "day svelte-1x1zvfc");
-    			set_style(div4, "border", "1px solid " + /*w*/ ctx[5].colors[4]);
-    			set_style(div4, "opacity", /*w*/ ctx[5].opacity);
-    			set_style(div4, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[4] : "none");
-    			add_location(div4, file$1, 68, 6, 1857);
-    			attr_dev(div5, "class", "day svelte-1x1zvfc");
-    			set_style(div5, "border", "1px solid " + /*w*/ ctx[5].colors[5]);
-    			set_style(div5, "opacity", /*w*/ ctx[5].opacity);
-    			set_style(div5, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[5] : "none");
-    			add_location(div5, file$1, 71, 6, 2010);
-    			attr_dev(div6, "class", "day svelte-1x1zvfc");
-    			set_style(div6, "border", "1px solid " + /*w*/ ctx[5].colors[6]);
-    			set_style(div6, "opacity", /*w*/ ctx[5].opacity);
-    			set_style(div6, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[6] : "none");
-    			add_location(div6, file$1, 74, 6, 2163);
-    			attr_dev(div7, "class", "row nowrap week svelte-1x1zvfc");
-    			toggle_class(div7, "isNow", /*w*/ ctx[5].fill);
-    			add_location(div7, file$1, 55, 4, 1188);
-    		},
-    		m: function mount(target, anchor) {
-    			insert_dev(target, div7, anchor);
-    			append_dev(div7, div0);
-    			append_dev(div7, t0);
-    			append_dev(div7, div1);
-    			append_dev(div7, t1);
-    			append_dev(div7, div2);
-    			append_dev(div7, t2);
-    			append_dev(div7, div3);
-    			append_dev(div7, t3);
-    			append_dev(div7, div4);
-    			append_dev(div7, t4);
-    			append_dev(div7, div5);
-    			append_dev(div7, t5);
-    			append_dev(div7, div6);
-    			append_dev(div7, t6);
-    		},
-    		p: function update(ctx, dirty) {
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div0, "border", "1px solid " + /*w*/ ctx[5].colors[0]);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div0, "opacity", /*w*/ ctx[5].opacity);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div0, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[0] : "none");
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div1, "border", "1px solid " + /*w*/ ctx[5].colors[1]);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div1, "opacity", /*w*/ ctx[5].opacity);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div1, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[1] : "none");
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div2, "border", "1px solid " + /*w*/ ctx[5].colors[2]);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div2, "opacity", /*w*/ ctx[5].opacity);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div2, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[2] : "none");
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div3, "border", "1px solid " + /*w*/ ctx[5].colors[3]);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div3, "opacity", /*w*/ ctx[5].opacity);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div3, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[3] : "none");
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div4, "border", "1px solid " + /*w*/ ctx[5].colors[4]);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div4, "opacity", /*w*/ ctx[5].opacity);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div4, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[4] : "none");
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div5, "border", "1px solid " + /*w*/ ctx[5].colors[5]);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div5, "opacity", /*w*/ ctx[5].opacity);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div5, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[5] : "none");
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div6, "border", "1px solid " + /*w*/ ctx[5].colors[6]);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div6, "opacity", /*w*/ ctx[5].opacity);
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				set_style(div6, "background-color", /*w*/ ctx[5].fill ? /*w*/ ctx[5].colors[6] : "none");
-    			}
-
-    			if (dirty & /*weeks*/ 1) {
-    				toggle_class(div7, "isNow", /*w*/ ctx[5].fill);
-    			}
-    		},
-    		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div7);
-    		}
-    	};
-
-    	dispatch_dev("SvelteRegisterBlock", {
-    		block,
-    		id: create_each_block.name,
-    		type: "each",
-    		source: "(55:2) {#each weeks as w}",
-    		ctx
-    	});
-
-    	return block;
-    }
+    const file$1 = "src/Pouch.svelte";
 
     function create_fragment$1(ctx) {
-    	let div4;
-    	let div3;
-    	let div0;
-    	let t1;
     	let div1;
+    	let button0;
+    	let t1;
+    	let pre;
+    	let t2_value = JSON.stringify(/*$data*/ ctx[1], null, 2) + "";
+    	let t2;
     	let t3;
-    	let div2;
+    	let button1;
     	let t5;
-    	let each_value = /*weeks*/ ctx[0];
-    	validate_each_argument(each_value);
-    	let each_blocks = [];
+    	let div0;
+    	let current;
+    	let mounted;
+    	let dispose;
 
-    	for (let i = 0; i < each_value.length; i += 1) {
-    		each_blocks[i] = create_each_block(get_each_context(ctx, each_value, i));
-    	}
+    	const day = new Day({
+    			props: { date: /*date*/ ctx[4] },
+    			$$inline: true
+    		});
 
     	const block = {
     		c: function create() {
-    			div4 = element("div");
-    			div3 = element("div");
-    			div0 = element("div");
-    			div0.textContent = "<";
-    			t1 = space();
     			div1 = element("div");
-    			div1.textContent = `${/*s*/ ctx[1].year()}`;
+    			button0 = element("button");
+    			button0.textContent = "update";
+    			t1 = space();
+    			pre = element("pre");
+    			t2 = text(t2_value);
     			t3 = space();
-    			div2 = element("div");
-    			div2.textContent = ">";
+    			button1 = element("button");
+    			button1.textContent = "writeNow";
     			t5 = space();
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].c();
-    			}
-
-    			add_location(div0, file$1, 50, 4, 1080);
-    			attr_dev(div1, "class", "mh1 svelte-1x1zvfc");
-    			add_location(div1, file$1, 51, 4, 1100);
-    			add_location(div2, file$1, 52, 4, 1138);
-    			attr_dev(div3, "class", "year row nowrap svelte-1x1zvfc");
-    			add_location(div3, file$1, 49, 2, 1046);
-    			attr_dev(div4, "class", "col");
-    			add_location(div4, file$1, 48, 0, 1026);
+    			div0 = element("div");
+    			create_component(day.$$.fragment);
+    			add_location(button0, file$1, 45, 2, 850);
+    			attr_dev(pre, "class", "svelte-ok46cb");
+    			add_location(pre, file$1, 46, 2, 895);
+    			add_location(button1, file$1, 47, 2, 941);
+    			attr_dev(div0, "class", "m3");
+    			add_location(div0, file$1, 48, 2, 989);
+    			add_location(div1, file$1, 44, 0, 842);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div4, anchor);
-    			append_dev(div4, div3);
-    			append_dev(div3, div0);
-    			append_dev(div3, t1);
-    			append_dev(div3, div1);
-    			append_dev(div3, t3);
-    			append_dev(div3, div2);
-    			append_dev(div4, t5);
+    			insert_dev(target, div1, anchor);
+    			append_dev(div1, button0);
+    			append_dev(div1, t1);
+    			append_dev(div1, pre);
+    			append_dev(pre, t2);
+    			append_dev(div1, t3);
+    			append_dev(div1, button1);
+    			append_dev(div1, t5);
+    			append_dev(div1, div0);
+    			mount_component(day, div0, null);
+    			current = true;
 
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(div4, null);
+    			if (!mounted) {
+    				dispose = [
+    					listen_dev(button0, "click", /*onClick*/ ctx[2], false, false, false),
+    					listen_dev(button1, "click", /*writeNow*/ ctx[3], false, false, false)
+    				];
+
+    				mounted = true;
     			}
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*weeks*/ 1) {
-    				each_value = /*weeks*/ ctx[0];
-    				validate_each_argument(each_value);
-    				let i;
-
-    				for (i = 0; i < each_value.length; i += 1) {
-    					const child_ctx = get_each_context(ctx, each_value, i);
-
-    					if (each_blocks[i]) {
-    						each_blocks[i].p(child_ctx, dirty);
-    					} else {
-    						each_blocks[i] = create_each_block(child_ctx);
-    						each_blocks[i].c();
-    						each_blocks[i].m(div4, null);
-    					}
-    				}
-
-    				for (; i < each_blocks.length; i += 1) {
-    					each_blocks[i].d(1);
-    				}
-
-    				each_blocks.length = each_value.length;
-    			}
+    			if ((!current || dirty & /*$data*/ 2) && t2_value !== (t2_value = JSON.stringify(/*$data*/ ctx[1], null, 2) + "")) set_data_dev(t2, t2_value);
     		},
-    		i: noop,
-    		o: noop,
+    		i: function intro(local) {
+    			if (current) return;
+    			transition_in(day.$$.fragment, local);
+    			current = true;
+    		},
+    		o: function outro(local) {
+    			transition_out(day.$$.fragment, local);
+    			current = false;
+    		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div4);
-    			destroy_each(each_blocks, detaching);
+    			if (detaching) detach_dev(div1);
+    			destroy_component(day);
+    			mounted = false;
+    			run_all(dispose);
     		}
     	};
 
@@ -5075,246 +5309,178 @@ var app = (function () {
     }
 
     function instance$1($$self, $$props, $$invalidate) {
-    	let now = src.now();
-    	let { date = now } = $$props;
-    	console.log(now);
-    	let s = date.startOf("year");
-    	let weeks = s.every("week", s.endOf("year"));
-    	let colors = ["#3E7995", "#6E9588", "#87B0B7", "#8797B7", "#B0BC93"];
+    	let $data,
+    		$$unsubscribe_data = noop,
+    		$$subscribe_data = () => ($$unsubscribe_data(), $$unsubscribe_data = subscribe(data, $$value => $$invalidate(1, $data = $$value)), data);
 
-    	weeks = weeks.map((w, i) => {
-    		let cols = w.every("day", w.endOf("week").add(1, "second")).map(d => {
-    			return colors[d.month() % colors.length];
-    		});
+    	$$self.$$.on_destroy.push(() => $$unsubscribe_data());
+    	let { user = "username" } = $$props;
+    	let { data = writable({ _id: user }) } = $$props;
+    	validate_store(data, "data");
+    	$$subscribe_data();
 
-    		return {
-    			month: w.month(),
-    			iso: w.format("iso-short"),
-    			fill: w.isSame(date, "week"),
-    			colors: cols,
-    			opacity: w.isAfter(now) ? 0.2 : 0.7
-    		};
+    	// import './02-encrypt.js'
+    	read(user).then(doc => {
+    		// console.log(doc)
+    		set_store_value(data, $data = doc);
     	});
 
-    	console.log(weeks);
-    	const writable_props = ["date"];
+    	// initial set data
+    	const onClick = function () {
+    		console.log("change");
+    		set_store_value(data, $data.heyya = Math.random(), $data);
+    	};
+
+    	const writeNow = async function () {
+    		data.update(val => {
+    			// console.log(val)
+    			let res = write(val);
+
+    			console.log("wrote");
+    			console.log(res);
+    			return val;
+    		});
+    	};
+
+    	// })
+    	let date = src.today().format("iso-short");
+
+    	const writable_props = ["user", "data"];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$1.warn(`<Year> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$1.warn(`<Pouch> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
-    	validate_slots("Year", $$slots, []);
+    	validate_slots("Pouch", $$slots, []);
 
     	$$self.$set = $$props => {
-    		if ("date" in $$props) $$invalidate(2, date = $$props.date);
+    		if ("user" in $$props) $$invalidate(5, user = $$props.user);
+    		if ("data" in $$props) $$subscribe_data($$invalidate(0, data = $$props.data));
     	};
 
-    	$$self.$capture_state = () => ({ spacetime: src, now, date, s, weeks, colors });
+    	$$self.$capture_state = () => ({
+    		Day,
+    		setContext,
+    		read,
+    		write,
+    		writable,
+    		spacetime: src,
+    		user,
+    		data,
+    		onClick,
+    		writeNow,
+    		date,
+    		$data
+    	});
 
     	$$self.$inject_state = $$props => {
-    		if ("now" in $$props) now = $$props.now;
-    		if ("date" in $$props) $$invalidate(2, date = $$props.date);
-    		if ("s" in $$props) $$invalidate(1, s = $$props.s);
-    		if ("weeks" in $$props) $$invalidate(0, weeks = $$props.weeks);
-    		if ("colors" in $$props) colors = $$props.colors;
+    		if ("user" in $$props) $$invalidate(5, user = $$props.user);
+    		if ("data" in $$props) $$subscribe_data($$invalidate(0, data = $$props.data));
+    		if ("date" in $$props) $$invalidate(4, date = $$props.date);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [weeks, s, date];
+    	return [data, $data, onClick, writeNow, date, user];
     }
 
-    class Year extends SvelteComponentDev {
+    class Pouch extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$1, create_fragment$1, safe_not_equal, { date: 2 });
+    		init(this, options, instance$1, create_fragment$1, safe_not_equal, { user: 5, data: 0 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
-    			tagName: "Year",
+    			tagName: "Pouch",
     			options,
     			id: create_fragment$1.name
     		});
     	}
 
-    	get date() {
-    		throw new Error("<Year>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	get user() {
+    		throw new Error("<Pouch>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
 
-    	set date(value) {
-    		throw new Error("<Year>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	set user(value) {
+    		throw new Error("<Pouch>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	get data() {
+    		throw new Error("<Pouch>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set data(value) {
+    		throw new Error("<Pouch>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
     }
 
-    /* src/Week.svelte generated by Svelte v3.23.0 */
-    const file$2 = "src/Week.svelte";
-
-    function get_each_context$1(ctx, list, i) {
-    	const child_ctx = ctx.slice();
-    	child_ctx[4] = list[i];
-    	return child_ctx;
-    }
-
-    // (50:6) {#each days as d}
-    function create_each_block$1(ctx) {
-    	let current;
-
-    	const day = new Day({
-    			props: { date: /*d*/ ctx[4] },
-    			$$inline: true
-    		});
-
-    	const block = {
-    		c: function create() {
-    			create_component(day.$$.fragment);
-    		},
-    		m: function mount(target, anchor) {
-    			mount_component(day, target, anchor);
-    			current = true;
-    		},
-    		p: noop,
-    		i: function intro(local) {
-    			if (current) return;
-    			transition_in(day.$$.fragment, local);
-    			current = true;
-    		},
-    		o: function outro(local) {
-    			transition_out(day.$$.fragment, local);
-    			current = false;
-    		},
-    		d: function destroy(detaching) {
-    			destroy_component(day, detaching);
-    		}
-    	};
-
-    	dispatch_dev("SvelteRegisterBlock", {
-    		block,
-    		id: create_each_block$1.name,
-    		type: "each",
-    		source: "(50:6) {#each days as d}",
-    		ctx
-    	});
-
-    	return block;
-    }
+    /* src/App.svelte generated by Svelte v3.23.0 */
+    const file$2 = "src/App.svelte";
 
     function create_fragment$2(ctx) {
-    	let div4;
-    	let div0;
-    	let t0;
-    	let div3;
     	let div1;
-    	let t1;
-    	let div2;
+    	let div0;
+    	let updating_user;
     	let current;
-    	let each_value = /*days*/ ctx[0];
-    	validate_each_argument(each_value);
-    	let each_blocks = [];
 
-    	for (let i = 0; i < each_value.length; i += 1) {
-    		each_blocks[i] = create_each_block$1(get_each_context$1(ctx, each_value, i));
+    	function pouch_user_binding(value) {
+    		/*pouch_user_binding*/ ctx[1].call(null, value);
     	}
 
-    	const out = i => transition_out(each_blocks[i], 1, 1, () => {
-    		each_blocks[i] = null;
-    	});
+    	let pouch_props = {};
+
+    	if (/*user*/ ctx[0] !== void 0) {
+    		pouch_props.user = /*user*/ ctx[0];
+    	}
+
+    	const pouch = new Pouch({ props: pouch_props, $$inline: true });
+    	binding_callbacks.push(() => bind(pouch, "user", pouch_user_binding));
 
     	const block = {
     		c: function create() {
-    			div4 = element("div");
-    			div0 = element("div");
-    			t0 = space();
-    			div3 = element("div");
     			div1 = element("div");
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].c();
-    			}
-
-    			t1 = space();
-    			div2 = element("div");
-    			attr_dev(div0, "class", "month svelte-cyvhda");
-    			add_location(div0, file$2, 42, 2, 847);
-    			attr_dev(div1, "class", "slider svelte-cyvhda");
-    			add_location(div1, file$2, 48, 4, 1071);
-    			attr_dev(div2, "class", "rightSide svelte-cyvhda");
-    			add_location(div2, file$2, 53, 4, 1170);
-    			attr_dev(div3, "class", "row nowrap week svelte-cyvhda");
-    			add_location(div3, file$2, 46, 2, 991);
-    			attr_dev(div4, "class", "col");
-    			add_location(div4, file$2, 41, 0, 827);
+    			div0 = element("div");
+    			create_component(pouch.$$.fragment);
+    			attr_dev(div0, "class", "m3");
+    			add_location(div0, file$2, 15, 2, 322);
+    			attr_dev(div1, "class", "main");
+    			add_location(div1, file$2, 10, 0, 137);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div4, anchor);
-    			append_dev(div4, div0);
-    			append_dev(div4, t0);
-    			append_dev(div4, div3);
-    			append_dev(div3, div1);
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(div1, null);
-    			}
-
-    			append_dev(div3, t1);
-    			append_dev(div3, div2);
+    			insert_dev(target, div1, anchor);
+    			append_dev(div1, div0);
+    			mount_component(pouch, div0, null);
     			current = true;
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*days*/ 1) {
-    				each_value = /*days*/ ctx[0];
-    				validate_each_argument(each_value);
-    				let i;
+    			const pouch_changes = {};
 
-    				for (i = 0; i < each_value.length; i += 1) {
-    					const child_ctx = get_each_context$1(ctx, each_value, i);
-
-    					if (each_blocks[i]) {
-    						each_blocks[i].p(child_ctx, dirty);
-    						transition_in(each_blocks[i], 1);
-    					} else {
-    						each_blocks[i] = create_each_block$1(child_ctx);
-    						each_blocks[i].c();
-    						transition_in(each_blocks[i], 1);
-    						each_blocks[i].m(div1, null);
-    					}
-    				}
-
-    				group_outros();
-
-    				for (i = each_value.length; i < each_blocks.length; i += 1) {
-    					out(i);
-    				}
-
-    				check_outros();
+    			if (!updating_user && dirty & /*user*/ 1) {
+    				updating_user = true;
+    				pouch_changes.user = /*user*/ ctx[0];
+    				add_flush_callback(() => updating_user = false);
     			}
+
+    			pouch.$set(pouch_changes);
     		},
     		i: function intro(local) {
     			if (current) return;
-
-    			for (let i = 0; i < each_value.length; i += 1) {
-    				transition_in(each_blocks[i]);
-    			}
-
+    			transition_in(pouch.$$.fragment, local);
     			current = true;
     		},
     		o: function outro(local) {
-    			each_blocks = each_blocks.filter(Boolean);
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				transition_out(each_blocks[i]);
-    			}
-
+    			transition_out(pouch.$$.fragment, local);
     			current = false;
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div4);
-    			destroy_each(each_blocks, detaching);
+    			if (detaching) detach_dev(div1);
+    			destroy_component(pouch);
     		}
     	};
 
@@ -5330,417 +5496,61 @@ var app = (function () {
     }
 
     function instance$2($$self, $$props, $$invalidate) {
-    	let { date = "" } = $$props;
-    	let s = src(date).startOf("week");
-    	let end = s.endOf("week");
-    	s = s.minus(1, "second");
-    	let days = s.every("day", end);
-    	const writable_props = ["date"];
+    	let { user = "username" } = $$props;
+    	const writable_props = ["user"];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Week> was created with unknown prop '${key}'`);
-    	});
-
-    	let { $$slots = {}, $$scope } = $$props;
-    	validate_slots("Week", $$slots, []);
-
-    	$$self.$set = $$props => {
-    		if ("date" in $$props) $$invalidate(1, date = $$props.date);
-    	};
-
-    	$$self.$capture_state = () => ({ spacetime: src, Day, Year, date, s, end, days });
-
-    	$$self.$inject_state = $$props => {
-    		if ("date" in $$props) $$invalidate(1, date = $$props.date);
-    		if ("s" in $$props) s = $$props.s;
-    		if ("end" in $$props) end = $$props.end;
-    		if ("days" in $$props) $$invalidate(0, days = $$props.days);
-    	};
-
-    	if ($$props && "$$inject" in $$props) {
-    		$$self.$inject_state($$props.$$inject);
-    	}
-
-    	return [days, date];
-    }
-
-    class Week extends SvelteComponentDev {
-    	constructor(options) {
-    		super(options);
-    		init(this, options, instance$2, create_fragment$2, safe_not_equal, { date: 1 });
-
-    		dispatch_dev("SvelteRegisterComponent", {
-    			component: this,
-    			tagName: "Week",
-    			options,
-    			id: create_fragment$2.name
-    		});
-    	}
-
-    	get date() {
-    		throw new Error("<Week>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-    	}
-
-    	set date(value) {
-    		throw new Error("<Week>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-    	}
-    }
-
-    /* src/Pouch.svelte generated by Svelte v3.23.0 */
-
-    const { console: console_1$2 } = globals;
-    const file$3 = "src/Pouch.svelte";
-
-    function create_fragment$3(ctx) {
-    	let div;
-
-    	const block = {
-    		c: function create() {
-    			div = element("div");
-    			div.textContent = "pouchdb";
-    			add_location(div, file$3, 20, 0, 415);
-    		},
-    		l: function claim(nodes) {
-    			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
-    		},
-    		m: function mount(target, anchor) {
-    			insert_dev(target, div, anchor);
-    		},
-    		p: noop,
-    		i: noop,
-    		o: noop,
-    		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div);
-    		}
-    	};
-
-    	dispatch_dev("SvelteRegisterBlock", {
-    		block,
-    		id: create_fragment$3.name,
-    		type: "component",
-    		source: "",
-    		ctx
-    	});
-
-    	return block;
-    }
-
-    function instance$3($$self, $$props, $$invalidate) {
-    	let db = new PouchDB("db");
-
-    	const replication = PouchDB.sync("db", "http://34.86.136.15:5984/headache", { live: true, retry: false }).on("change", async function (info) {
-    		console.log(info);
-    	}).on("error", function (err) {
-    		console.log("Replication error:", err);
-    	});
-
-    	const writable_props = [];
-
-    	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$2.warn(`<Pouch> was created with unknown prop '${key}'`);
-    	});
-
-    	let { $$slots = {}, $$scope } = $$props;
-    	validate_slots("Pouch", $$slots, []);
-    	$$self.$capture_state = () => ({ db, replication });
-
-    	$$self.$inject_state = $$props => {
-    		if ("db" in $$props) db = $$props.db;
-    	};
-
-    	if ($$props && "$$inject" in $$props) {
-    		$$self.$inject_state($$props.$$inject);
-    	}
-
-    	return [];
-    }
-
-    class Pouch extends SvelteComponentDev {
-    	constructor(options) {
-    		super(options);
-    		init(this, options, instance$3, create_fragment$3, safe_not_equal, {});
-
-    		dispatch_dev("SvelteRegisterComponent", {
-    			component: this,
-    			tagName: "Pouch",
-    			options,
-    			id: create_fragment$3.name
-    		});
-    	}
-    }
-
-    /* src/App.svelte generated by Svelte v3.23.0 */
-
-    const { console: console_1$3 } = globals;
-    const file$4 = "src/App.svelte";
-
-    function get_each_context$2(ctx, list, i) {
-    	const child_ctx = ctx.slice();
-    	child_ctx[5] = list[i];
-    	return child_ctx;
-    }
-
-    // (47:4) {#each keys as key}
-    function create_each_block$2(ctx) {
-    	let div;
-    	let t_value = /*key*/ ctx[5] + "";
-    	let t;
-
-    	const block = {
-    		c: function create() {
-    			div = element("div");
-    			t = text(t_value);
-    			add_location(div, file$4, 47, 6, 993);
-    		},
-    		m: function mount(target, anchor) {
-    			insert_dev(target, div, anchor);
-    			append_dev(div, t);
-    		},
-    		p: function update(ctx, dirty) {
-    			if (dirty & /*keys*/ 2 && t_value !== (t_value = /*key*/ ctx[5] + "")) set_data_dev(t, t_value);
-    		},
-    		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div);
-    		}
-    	};
-
-    	dispatch_dev("SvelteRegisterBlock", {
-    		block,
-    		id: create_each_block$2.name,
-    		type: "each",
-    		source: "(47:4) {#each keys as key}",
-    		ctx
-    	});
-
-    	return block;
-    }
-
-    function create_fragment$4(ctx) {
-    	let div3;
-    	let t0;
-    	let div0;
-    	let updating_value;
-    	let t1;
-    	let div1;
-    	let t2;
-    	let div2;
-    	let current;
-    	const pouch = new Pouch({ $$inline: true });
-
-    	function week_value_binding(value) {
-    		/*week_value_binding*/ ctx[4].call(null, value);
-    	}
-
-    	let week_props = { callback: /*onType*/ ctx[2] };
-
-    	if (/*value*/ ctx[0] !== void 0) {
-    		week_props.value = /*value*/ ctx[0];
-    	}
-
-    	const week = new Week({ props: week_props, $$inline: true });
-    	binding_callbacks.push(() => bind(week, "value", week_value_binding));
-    	let each_value = /*keys*/ ctx[1];
-    	validate_each_argument(each_value);
-    	let each_blocks = [];
-
-    	for (let i = 0; i < each_value.length; i += 1) {
-    		each_blocks[i] = create_each_block$2(get_each_context$2(ctx, each_value, i));
-    	}
-
-    	const block = {
-    		c: function create() {
-    			div3 = element("div");
-    			create_component(pouch.$$.fragment);
-    			t0 = space();
-    			div0 = element("div");
-    			create_component(week.$$.fragment);
-    			t1 = space();
-    			div1 = element("div");
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].c();
-    			}
-
-    			t2 = space();
-    			div2 = element("div");
-    			div2.textContent = "[calendar]";
-    			attr_dev(div0, "class", "row nowrap week svelte-1pwd1ps");
-    			add_location(div0, file$4, 40, 2, 801);
-    			attr_dev(div1, "class", " row");
-    			add_location(div1, file$4, 45, 2, 944);
-    			attr_dev(div2, "class", "col outline");
-    			add_location(div2, file$4, 50, 2, 1033);
-    			attr_dev(div3, "class", "main");
-    			add_location(div3, file$4, 38, 0, 768);
-    		},
-    		l: function claim(nodes) {
-    			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
-    		},
-    		m: function mount(target, anchor) {
-    			insert_dev(target, div3, anchor);
-    			mount_component(pouch, div3, null);
-    			append_dev(div3, t0);
-    			append_dev(div3, div0);
-    			mount_component(week, div0, null);
-    			append_dev(div3, t1);
-    			append_dev(div3, div1);
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(div1, null);
-    			}
-
-    			append_dev(div3, t2);
-    			append_dev(div3, div2);
-    			current = true;
-    		},
-    		p: function update(ctx, [dirty]) {
-    			const week_changes = {};
-
-    			if (!updating_value && dirty & /*value*/ 1) {
-    				updating_value = true;
-    				week_changes.value = /*value*/ ctx[0];
-    				add_flush_callback(() => updating_value = false);
-    			}
-
-    			week.$set(week_changes);
-
-    			if (dirty & /*keys*/ 2) {
-    				each_value = /*keys*/ ctx[1];
-    				validate_each_argument(each_value);
-    				let i;
-
-    				for (i = 0; i < each_value.length; i += 1) {
-    					const child_ctx = get_each_context$2(ctx, each_value, i);
-
-    					if (each_blocks[i]) {
-    						each_blocks[i].p(child_ctx, dirty);
-    					} else {
-    						each_blocks[i] = create_each_block$2(child_ctx);
-    						each_blocks[i].c();
-    						each_blocks[i].m(div1, null);
-    					}
-    				}
-
-    				for (; i < each_blocks.length; i += 1) {
-    					each_blocks[i].d(1);
-    				}
-
-    				each_blocks.length = each_value.length;
-    			}
-    		},
-    		i: function intro(local) {
-    			if (current) return;
-    			transition_in(pouch.$$.fragment, local);
-    			transition_in(week.$$.fragment, local);
-    			current = true;
-    		},
-    		o: function outro(local) {
-    			transition_out(pouch.$$.fragment, local);
-    			transition_out(week.$$.fragment, local);
-    			current = false;
-    		},
-    		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div3);
-    			destroy_component(pouch);
-    			destroy_component(week);
-    			destroy_each(each_blocks, detaching);
-    		}
-    	};
-
-    	dispatch_dev("SvelteRegisterBlock", {
-    		block,
-    		id: create_fragment$4.name,
-    		type: "component",
-    		source: "",
-    		ctx
-    	});
-
-    	return block;
-    }
-
-    function instance$4($$self, $$props, $$invalidate) {
-    	let value = "asdf [fun:cool] and [nice:yes]";
-    	let keys = [];
-
-    	function onType(res) {
-    		$$invalidate(1, keys = []);
-
-    		res.forEach(l => {
-    			l.data.forEach(o => keys.push(o.key));
-    		});
-
-    		console.log(keys);
-    	}
-
-    	let data = {
-    		"2020-06-23": "",
-    		"2020-06-24": ".kates\n.dream = stress",
-    		"2020-06-25": "drove to port credit\n\n.kate\n.dream = stress",
-    		"2020-06-26": `i worked on this app and it is not that good yet.
-
-.micheal
-.work = headache
-.release=false
-.beer=true
-
-.storm=nope
-`,
-    		"2020-07-23": "july"
-    	};
-
-    	setContext("data", data);
-    	const writable_props = [];
-
-    	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$3.warn(`<App> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<App> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
     	validate_slots("App", $$slots, []);
 
-    	function week_value_binding(value$1) {
-    		value = value$1;
-    		$$invalidate(0, value);
+    	function pouch_user_binding(value) {
+    		user = value;
+    		$$invalidate(0, user);
     	}
 
-    	$$self.$capture_state = () => ({
-    		Week,
-    		Pouch,
-    		value,
-    		keys,
-    		onType,
-    		setContext,
-    		data
-    	});
+    	$$self.$set = $$props => {
+    		if ("user" in $$props) $$invalidate(0, user = $$props.user);
+    	};
+
+    	$$self.$capture_state = () => ({ Pouch, user });
 
     	$$self.$inject_state = $$props => {
-    		if ("value" in $$props) $$invalidate(0, value = $$props.value);
-    		if ("keys" in $$props) $$invalidate(1, keys = $$props.keys);
-    		if ("data" in $$props) data = $$props.data;
+    		if ("user" in $$props) $$invalidate(0, user = $$props.user);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [value, keys, onType, data, week_value_binding];
+    	return [user, pouch_user_binding];
     }
 
     class App extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$4, create_fragment$4, safe_not_equal, {});
+    		init(this, options, instance$2, create_fragment$2, safe_not_equal, { user: 0 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
     			tagName: "App",
     			options,
-    			id: create_fragment$4.name
+    			id: create_fragment$2.name
     		});
+    	}
+
+    	get user() {
+    		throw new Error("<App>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
+
+    	set user(value) {
+    		throw new Error("<App>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
     }
 
-    let user = '';
+    let user = undefined;
     // wire-in query params
     const URLSearchParams = window.URLSearchParams;
     if (typeof URLSearchParams !== undefined) {

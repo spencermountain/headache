@@ -30,6 +30,7 @@
     "svelte-preprocess": "^3.7.4"
   },
   "dependencies": {
+    "crypto-js": "^4.0.0",
     "pouchdb-browser": "^7.2.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",

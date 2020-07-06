@@ -1,6 +1,6 @@
 import App from './src/App.svelte'
 
-let user = ''
+let user = undefined
 // wire-in query params
 const URLSearchParams = window.URLSearchParams
 if (typeof URLSearchParams !== undefined) {
