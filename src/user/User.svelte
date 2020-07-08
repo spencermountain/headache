@@ -1,5 +1,6 @@
 <script>
   import Input from './Input.svelte'
+  import Output from './output/Output.svelte'
   import Scroll from './Scroll.svelte'
   import DayPick from './DayPick.svelte'
   import Vertical from '../../components/Vertical.svelte'
@@ -23,44 +24,58 @@
 </script>
 
 <style>
-  .row-right {
-    justify-content: flex-end;
-  }
-
-  #write {
-    flex-grow: 1;
-  }
-  #date {
-    width: 200px;
-    height: 100%;
+  .page {
+    display: flex;
+    min-height: 97vh;
+    flex-direction: column;
   }
   .container {
     align-items: flex-start;
     justify-content: flex-start;
     height: 100%;
+    background-color: #3b4252;
   }
+
+  .row-right {
+    justify-content: flex-end;
+  }
+  .toprow {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .footer {
+    width: 98%;
+  }
+
   .middle {
     justify-content: flex-start;
+    flex-grow: 1;
+  }
+  .button {
+    background-color: lightgrey;
   }
 </style>
 
-<div class="row container">
-  <!-- left-side -->
-  <Scroll />
+<div class="page">
+  <div class="row container">
+    <!-- left-side -->
+    <Scroll />
 
-  <!-- middle -->
-  <div class="col middle">
-    <div id="write">
-      <Input write={writeNow} />
+    <!-- middle -->
+    <div class="col middle">
+      <div class="toprow">
+        <Input write={writeNow} />
+      </div>
+      <Output />
     </div>
 
   </div>
+  <!-- <pre>{JSON.stringify($data, null, 2)}</pre> -->
 
 </div>
-<!-- <pre>{JSON.stringify($data, null, 2)}</pre> -->
-
-<div id="date">
+<div class="footer">
   <div class="row row-right">
-    <button class="rounded" on:click={logout}>logout</button>
+    <button class="button rounded" on:click={logout}>logout</button>
   </div>
 </div>
