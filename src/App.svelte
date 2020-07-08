@@ -11,17 +11,8 @@
   }
 </script>
 
-<style>
-  .main {
-    color: #c7cdd8;
-  }
-</style>
-
-<div class="main">
-  {#if !$user}
-    <Login />
-  {:else}
-    <User {logout} />
-  {/if}
-
-</div>
+{#if !$user}
+  <Login />
+{:else}
+  <User {logout} />
+{/if}

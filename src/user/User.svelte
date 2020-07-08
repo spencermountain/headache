@@ -1,5 +1,8 @@
 <script>
-  import Day from './Day.svelte'
+  import Input from './Input.svelte'
+  import Scroll from './Scroll.svelte'
+  import DayPick from './DayPick.svelte'
+  import Vertical from '../../components/Vertical.svelte'
   export let logout
   import { getUser, saveUser } from './couch/index.js'
   import { data, date, user, pass } from '../store'
@@ -15,24 +18,15 @@
     saveUser($data, $pass)
   }
 
-  const goBack = () => date.update(d => d.minus(1, 'day'))
-  const goNext = () => date.update(d => d.add(1, 'day'))
+  // const goBack = () => date.update(d => d.minus(1, 'day'))
+  // const goNext = () => date.update(d => d.add(1, 'day'))
 </script>
 
 <style>
-  pre {
-    color: white;
-    max-width: 20rem;
-  }
   .row-right {
     justify-content: flex-end;
   }
-  #scroll {
-    width: 200px;
-    height: 100%;
-    overflow-y: scroll;
-    border: 1px solid white;
-  }
+
   #write {
     flex-grow: 1;
   }
@@ -40,34 +34,28 @@
     width: 200px;
     height: 100%;
   }
-  .note {
-    height: 150px;
-    width: 100%;
-    border: 1px solid white;
-  }
+
   .container {
     align-items: flex-start;
+    height: 100%;
   }
 </style>
 
 <div class="row container">
-  <div id="scroll">
-    {#each Object.keys($data.dates) as date}
-      <div class="col note">
-        <div class="left blue ulred">{date}</div>
-        <div>{$data.dates[date]}</div>
-      </div>
-    {/each}
-  </div>
+  <Scroll />
   <div id="write">
     <!-- <pre>{JSON.stringify($data, null, 2)}</pre> -->
-    <Day write={writeNow} />
+    <Input write={writeNow} />
+    <!-- <Vertical /> -->
   </div>
   <div id="date">
     <div class="row row-right">
       <button class="rounded" on:click={logout}>logout</button>
     </div>
     <div class="f2 blue">{$date.format('{month} {date-ordinal}')}</div>
+    <div class="mt3">
+      <!-- <DayPick /> -->
+    </div>
   </div>
 
 </div>

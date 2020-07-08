@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import { data, date } from '../store'
   import debounce from 'lodash/debounce'
+  import DayPick from './DayPick.svelte'
   import spacetime from 'spacetime'
   import resizable from './lib/_resizable'
   export let write = () => {}
@@ -46,8 +47,8 @@
   }
 </style>
 
-<div class="container">
-  <div class="title row">{spacetime($date).format('{day-short} {month} {date}')}</div>
+<div class="container row">
+  <!-- <div class="title row">{spacetime($date).format('{day-short} {month} {date}')}</div> -->
   <textarea
     class="textarea"
     spellcheck="false"
@@ -55,5 +56,5 @@
     bind:value={$data.dates[fmt]}
     on:input={didChange}
     bind:this={el} />
-
+  <DayPick />
 </div>
