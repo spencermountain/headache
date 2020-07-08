@@ -4642,21 +4642,21 @@ var app = (function () {
     			section6.textContent = "sunday";
     			t13 = space();
     			attr_dev(section0, "class", "svelte-w9izv6");
-    			add_location(section0, file, 88, 10, 2006);
+    			add_location(section0, file, 88, 10, 2015);
     			attr_dev(section1, "class", "svelte-w9izv6");
-    			add_location(section1, file, 89, 10, 2042);
+    			add_location(section1, file, 89, 10, 2051);
     			attr_dev(section2, "class", "svelte-w9izv6");
-    			add_location(section2, file, 90, 10, 2079);
+    			add_location(section2, file, 90, 10, 2088);
     			attr_dev(section3, "class", "svelte-w9izv6");
-    			add_location(section3, file, 91, 10, 2118);
+    			add_location(section3, file, 91, 10, 2127);
     			attr_dev(section4, "class", "svelte-w9izv6");
-    			add_location(section4, file, 92, 10, 2156);
+    			add_location(section4, file, 92, 10, 2165);
     			attr_dev(section5, "class", "svelte-w9izv6");
-    			add_location(section5, file, 93, 10, 2192);
+    			add_location(section5, file, 93, 10, 2201);
     			attr_dev(section6, "class", "svelte-w9izv6");
-    			add_location(section6, file, 94, 10, 2230);
+    			add_location(section6, file, 94, 10, 2239);
     			attr_dev(div, "class", "week svelte-w9izv6");
-    			add_location(div, file, 87, 8, 1977);
+    			add_location(div, file, 87, 8, 1986);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -4692,13 +4692,9 @@ var app = (function () {
     }
 
     function create_fragment(ctx) {
-    	let div3;
-    	let div0;
-    	let t0_value = /*date*/ ctx[0].format("{day-short} {month} {date-ordinal}, {year}") + "";
-    	let t0;
-    	let t1;
     	let div2;
     	let div1;
+    	let div0;
     	let mounted;
     	let dispose;
     	let each_value = Array(weekNum);
@@ -4711,50 +4707,42 @@ var app = (function () {
 
     	const block = {
     		c: function create() {
-    			div3 = element("div");
-    			div0 = element("div");
-    			t0 = text(t0_value);
-    			t1 = space();
     			div2 = element("div");
     			div1 = element("div");
+    			div0 = element("div");
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			attr_dev(div0, "class", "blue ulred m1");
-    			add_location(div0, file, 83, 2, 1707);
-    			attr_dev(div1, "class", "row grid svelte-w9izv6");
-    			set_style(div1, "width", weekNum * (w - 1) + "px");
-    			add_location(div1, file, 85, 4, 1873);
-    			attr_dev(div2, "class", "container shadow svelte-w9izv6");
-    			add_location(div2, file, 84, 2, 1802);
-    			attr_dev(div3, "class", "col");
-    			add_location(div3, file, 82, 0, 1687);
+    			attr_dev(div0, "class", "row grid svelte-w9izv6");
+    			set_style(div0, "width", weekNum * (w - 1) + "px");
+    			add_location(div0, file, 85, 4, 1882);
+    			attr_dev(div1, "class", "container shadow svelte-w9izv6");
+    			add_location(div1, file, 84, 2, 1811);
+    			attr_dev(div2, "class", "col");
+    			add_location(div2, file, 82, 0, 1687);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div3, anchor);
-    			append_dev(div3, div0);
-    			append_dev(div0, t0);
-    			append_dev(div3, t1);
-    			append_dev(div3, div2);
+    			insert_dev(target, div2, anchor);
     			append_dev(div2, div1);
+    			append_dev(div1, div0);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(div1, null);
+    				each_blocks[i].m(div0, null);
     			}
 
-    			/*div2_binding*/ ctx[8](div2);
+    			/*div1_binding*/ ctx[8](div1);
 
     			if (!mounted) {
     				dispose = listen_dev(
-    					div2,
+    					div1,
     					"scroll",
     					function () {
-    						if (is_function(/*onScroll*/ ctx[2])) /*onScroll*/ ctx[2].apply(this, arguments);
+    						if (is_function(/*onScroll*/ ctx[1])) /*onScroll*/ ctx[1].apply(this, arguments);
     					},
     					false,
     					false,
@@ -4766,14 +4754,13 @@ var app = (function () {
     		},
     		p: function update(new_ctx, [dirty]) {
     			ctx = new_ctx;
-    			if (dirty & /*date*/ 1 && t0_value !== (t0_value = /*date*/ ctx[0].format("{day-short} {month} {date-ordinal}, {year}") + "")) set_data_dev(t0, t0_value);
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div3);
+    			if (detaching) detach_dev(div2);
     			destroy_each(each_blocks, detaching);
-    			/*div2_binding*/ ctx[8](null);
+    			/*div1_binding*/ ctx[8](null);
     			mounted = false;
     			dispose();
     		}
@@ -4820,18 +4807,18 @@ var app = (function () {
     	};
 
     	onMount(() => {
-    		$$invalidate(1, el.scrollTop = yIndex * h, el);
-    		$$invalidate(1, el.scrollLeft = xIndex * w, el);
+    		$$invalidate(0, el.scrollTop = yIndex * h, el);
+    		$$invalidate(0, el.scrollLeft = xIndex * w, el);
     		console.log("mount");
 
-    		$$invalidate(2, onScroll = debounce(
+    		$$invalidate(1, onScroll = debounce(
     			function (e) {
     				yIndex = Math.round(el.scrollTop / h);
     				xIndex = Math.round(el.scrollLeft / w);
     				console.log("scrolled");
     				console.log(xIndex);
-    				$$invalidate(0, date = topLeft.day(dayArr[yIndex]));
-    				$$invalidate(0, date = date.add(xIndex, "weeks"));
+    				$$invalidate(2, date = topLeft.day(dayArr[yIndex]));
+    				$$invalidate(2, date = date.add(xIndex, "weeks"));
     			},
     			300
     		));
@@ -4846,14 +4833,14 @@ var app = (function () {
     	let { $$slots = {}, $$scope } = $$props;
     	validate_slots("DayPick", $$slots, []);
 
-    	function div2_binding($$value) {
+    	function div1_binding($$value) {
     		binding_callbacks[$$value ? "unshift" : "push"](() => {
-    			$$invalidate(1, el = $$value);
+    			$$invalidate(0, el = $$value);
     		});
     	}
 
     	$$self.$set = $$props => {
-    		if ("date" in $$props) $$invalidate(0, date = $$props.date);
+    		if ("date" in $$props) $$invalidate(2, date = $$props.date);
     	};
 
     	$$self.$capture_state = () => ({
@@ -4874,27 +4861,27 @@ var app = (function () {
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("date" in $$props) $$invalidate(0, date = $$props.date);
-    		if ("el" in $$props) $$invalidate(1, el = $$props.el);
+    		if ("date" in $$props) $$invalidate(2, date = $$props.date);
+    		if ("el" in $$props) $$invalidate(0, el = $$props.el);
     		if ("topLeft" in $$props) topLeft = $$props.topLeft;
     		if ("days" in $$props) days = $$props.days;
     		if ("dayArr" in $$props) dayArr = $$props.dayArr;
     		if ("yIndex" in $$props) yIndex = $$props.yIndex;
     		if ("xIndex" in $$props) xIndex = $$props.xIndex;
-    		if ("onScroll" in $$props) $$invalidate(2, onScroll = $$props.onScroll);
+    		if ("onScroll" in $$props) $$invalidate(1, onScroll = $$props.onScroll);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [date, el, onScroll, yIndex, xIndex, topLeft, days, dayArr, div2_binding];
+    	return [el, onScroll, date, yIndex, xIndex, topLeft, days, dayArr, div1_binding];
     }
 
     class DayPick extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance, create_fragment, safe_not_equal, { date: 0 });
+    		init(this, options, instance, create_fragment, safe_not_equal, { date: 2 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -4969,15 +4956,15 @@ var app = (function () {
     			create_component(daypick.$$.fragment);
     			attr_dev(div0, "class", "f1");
     			set_style(div0, "text-align", "left");
-    			add_location(div0, file$1, 67, 0, 1354);
-    			attr_dev(textarea, "class", "note svelte-flwh3b");
+    			add_location(div0, file$1, 67, 0, 1352);
+    			attr_dev(textarea, "class", "note svelte-19jyfmd");
     			attr_dev(textarea, "spellcheck", "false");
     			attr_dev(textarea, "resizable", "false");
-    			add_location(textarea, file$1, 69, 2, 1487);
-    			attr_dev(div1, "class", "picker svelte-flwh3b");
-    			add_location(div1, file$1, 76, 2, 1642);
-    			attr_dev(div2, "class", "container row svelte-flwh3b");
-    			add_location(div2, file$1, 68, 0, 1457);
+    			add_location(textarea, file$1, 69, 2, 1485);
+    			attr_dev(div1, "class", "picker svelte-19jyfmd");
+    			add_location(div1, file$1, 76, 2, 1640);
+    			attr_dev(div2, "class", "container row svelte-19jyfmd");
+    			add_location(div2, file$1, 68, 0, 1455);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -5209,17 +5196,23 @@ var app = (function () {
 
     function get_each_context$1(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[1] = list[i];
+    	child_ctx[3] = list[i];
     	return child_ctx;
     }
 
-    // (37:4) {#each Object.keys($data.dates) as date}
+    // (40:4) {#each Object.keys($data.dates) as d}
     function create_each_block$1(ctx) {
     	let div1;
     	let div0;
-    	let t0_value = /*date*/ ctx[1] + "";
+    	let t0_value = src(/*d*/ ctx[3]).format("{day-short} {month-short} {date}") + "";
     	let t0;
     	let t1;
+    	let mounted;
+    	let dispose;
+
+    	function click_handler(...args) {
+    		return /*click_handler*/ ctx[2](/*d*/ ctx[3], ...args);
+    	}
 
     	const block = {
     		c: function create() {
@@ -5227,22 +5220,30 @@ var app = (function () {
     			div0 = element("div");
     			t0 = text(t0_value);
     			t1 = space();
-    			attr_dev(div0, "class", "left blue ulred");
-    			add_location(div0, file$2, 38, 8, 794);
-    			attr_dev(div1, "class", "col note shadow svelte-1ewbk16");
-    			add_location(div1, file$2, 37, 6, 756);
+    			attr_dev(div0, "class", "left blue ulred f1");
+    			add_location(div0, file$2, 41, 8, 943);
+    			attr_dev(div1, "class", "col note shadow svelte-1adent3");
+    			add_location(div1, file$2, 40, 6, 865);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div1, anchor);
     			append_dev(div1, div0);
     			append_dev(div0, t0);
     			append_dev(div1, t1);
+
+    			if (!mounted) {
+    				dispose = listen_dev(div1, "click", click_handler, false, false, false);
+    				mounted = true;
+    			}
     		},
-    		p: function update(ctx, dirty) {
-    			if (dirty & /*$data*/ 1 && t0_value !== (t0_value = /*date*/ ctx[1] + "")) set_data_dev(t0, t0_value);
+    		p: function update(new_ctx, dirty) {
+    			ctx = new_ctx;
+    			if (dirty & /*$data*/ 1 && t0_value !== (t0_value = src(/*d*/ ctx[3]).format("{day-short} {month-short} {date}") + "")) set_data_dev(t0, t0_value);
     		},
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div1);
+    			mounted = false;
+    			dispose();
     		}
     	};
 
@@ -5250,7 +5251,7 @@ var app = (function () {
     		block,
     		id: create_each_block$1.name,
     		type: "each",
-    		source: "(37:4) {#each Object.keys($data.dates) as date}",
+    		source: "(40:4) {#each Object.keys($data.dates) as d}",
     		ctx
     	});
 
@@ -5286,13 +5287,13 @@ var app = (function () {
     				each_blocks[i].c();
     			}
 
-    			attr_dev(div0, "class", "f1 counter svelte-1ewbk16");
-    			add_location(div0, file$2, 34, 2, 611);
-    			attr_dev(div1, "class", "scroll svelte-1ewbk16");
-    			add_location(div1, file$2, 35, 2, 684);
+    			attr_dev(div0, "class", "f1 counter svelte-1adent3");
+    			add_location(div0, file$2, 37, 2, 723);
+    			attr_dev(div1, "class", "scroll svelte-1adent3");
+    			add_location(div1, file$2, 38, 2, 796);
     			attr_dev(div2, "id", "scroll");
-    			attr_dev(div2, "class", "svelte-1ewbk16");
-    			add_location(div2, file$2, 33, 0, 591);
+    			attr_dev(div2, "class", "svelte-1adent3");
+    			add_location(div2, file$2, 36, 0, 703);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -5312,7 +5313,7 @@ var app = (function () {
     		p: function update(ctx, [dirty]) {
     			if (dirty & /*$data*/ 1 && t0_value !== (t0_value = Object.keys(/*$data*/ ctx[0].dates).length + "")) set_data_dev(t0, t0_value);
 
-    			if (dirty & /*Object, $data*/ 1) {
+    			if (dirty & /*$date, spacetime, Object, $data*/ 3) {
     				each_value = Object.keys(/*$data*/ ctx[0].dates);
     				validate_each_argument(each_value);
     				let i;
@@ -5357,8 +5358,11 @@ var app = (function () {
 
     function instance$2($$self, $$props, $$invalidate) {
     	let $data;
+    	let $date;
     	validate_store(data$1, "data");
     	component_subscribe($$self, data$1, $$value => $$invalidate(0, $data = $$value));
+    	validate_store(date, "date");
+    	component_subscribe($$self, date, $$value => $$invalidate(1, $date = $$value));
     	const writable_props = [];
 
     	Object_1$1.keys($$props).forEach(key => {
@@ -5367,8 +5371,9 @@ var app = (function () {
 
     	let { $$slots = {}, $$scope } = $$props;
     	validate_slots("Scroll", $$slots, []);
-    	$$self.$capture_state = () => ({ data: data$1, $data });
-    	return [$data];
+    	const click_handler = d => set_store_value(date, $date = src(d));
+    	$$self.$capture_state = () => ({ data: data$1, date, spacetime: src, $data, $date });
+    	return [$data, $date, click_handler];
     }
 
     class Scroll extends SvelteComponentDev {
@@ -12143,12 +12148,13 @@ var app = (function () {
     const file$4 = "src/user/User.svelte";
 
     function create_fragment$4(ctx) {
-    	let div3;
+    	let div2;
     	let t0;
+    	let div1;
     	let div0;
     	let t1;
-    	let div2;
-    	let div1;
+    	let div4;
+    	let div3;
     	let button;
     	let current;
     	let mounted;
@@ -12162,42 +12168,46 @@ var app = (function () {
 
     	const block = {
     		c: function create() {
-    			div3 = element("div");
+    			div2 = element("div");
     			create_component(scroll.$$.fragment);
     			t0 = space();
+    			div1 = element("div");
     			div0 = element("div");
     			create_component(input.$$.fragment);
     			t1 = space();
-    			div2 = element("div");
-    			div1 = element("div");
+    			div4 = element("div");
+    			div3 = element("div");
     			button = element("button");
     			button.textContent = "logout";
     			attr_dev(div0, "id", "write");
-    			attr_dev(div0, "class", "svelte-2vp6ur");
-    			add_location(div0, file$4, 45, 2, 901);
+    			attr_dev(div0, "class", "svelte-16akrr6");
+    			add_location(div0, file$4, 52, 4, 1051);
+    			attr_dev(div1, "class", "col middle svelte-16akrr6");
+    			add_location(div1, file$4, 51, 2, 1022);
+    			attr_dev(div2, "class", "row container svelte-16akrr6");
+    			add_location(div2, file$4, 46, 0, 939);
     			attr_dev(button, "class", "rounded");
-    			add_location(button, file$4, 52, 6, 1097);
-    			attr_dev(div1, "class", "row row-right svelte-2vp6ur");
-    			add_location(div1, file$4, 51, 4, 1063);
-    			attr_dev(div2, "id", "date");
-    			attr_dev(div2, "class", "svelte-2vp6ur");
-    			add_location(div2, file$4, 50, 2, 1043);
-    			attr_dev(div3, "class", "row container svelte-2vp6ur");
-    			add_location(div3, file$4, 43, 0, 858);
+    			add_location(button, file$4, 63, 4, 1234);
+    			attr_dev(div3, "class", "row row-right svelte-16akrr6");
+    			add_location(div3, file$4, 62, 2, 1202);
+    			attr_dev(div4, "id", "date");
+    			attr_dev(div4, "class", "svelte-16akrr6");
+    			add_location(div4, file$4, 61, 0, 1184);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div3, anchor);
-    			mount_component(scroll, div3, null);
-    			append_dev(div3, t0);
-    			append_dev(div3, div0);
-    			mount_component(input, div0, null);
-    			append_dev(div3, t1);
-    			append_dev(div3, div2);
+    			insert_dev(target, div2, anchor);
+    			mount_component(scroll, div2, null);
+    			append_dev(div2, t0);
     			append_dev(div2, div1);
-    			append_dev(div1, button);
+    			append_dev(div1, div0);
+    			mount_component(input, div0, null);
+    			insert_dev(target, t1, anchor);
+    			insert_dev(target, div4, anchor);
+    			append_dev(div4, div3);
+    			append_dev(div3, button);
     			current = true;
 
     			if (!mounted) {
@@ -12230,9 +12240,11 @@ var app = (function () {
     			current = false;
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div3);
+    			if (detaching) detach_dev(div2);
     			destroy_component(scroll);
     			destroy_component(input);
+    			if (detaching) detach_dev(t1);
+    			if (detaching) detach_dev(div4);
     			mounted = false;
     			dispose();
     		}

@@ -1,5 +1,6 @@
 <script>
-  import { data } from '../store'
+  import { data, date } from '../store'
+  import spacetime from 'spacetime'
 </script>
 
 <style>
@@ -23,9 +24,11 @@
     height: 50px;
     margin: 1rem;
     padding: 10px;
+    cursor: pointer;
     width: 100px;
     font-size: 15px;
-    border: 1px solid dimgrey;
+    /* border: 1px solid dimgrey; */
+    border-left: 2px solid lightsteelblue;
     border-radius: 4px;
     box-shadow: 2px 2px 8px 0px rgba(0, 0, 0, 0.2);
   }
@@ -34,9 +37,9 @@
 <div id="scroll">
   <div class="f1 counter">{Object.keys($data.dates).length} notes:</div>
   <div class="scroll">
-    {#each Object.keys($data.dates) as date}
-      <div class="col note shadow">
-        <div class="left blue ulred">{date}</div>
+    {#each Object.keys($data.dates) as d}
+      <div class="col note shadow" on:click={() => ($date = spacetime(d))}>
+        <div class="left blue ulred f1">{spacetime(d).format('{day-short} {month-short} {date}')}</div>
         <!-- <div>{$data.dates[date]}</div> -->
       </div>
     {/each}

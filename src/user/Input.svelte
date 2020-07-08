@@ -59,8 +59,8 @@
   }
   .picker {
     position: relative;
-    top: -20px;
-    margin-left: -175px;
+    top: -5px;
+    margin-left: -75px;
     z-index: 4;
   }
 </style>

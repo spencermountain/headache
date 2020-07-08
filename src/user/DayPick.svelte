@@ -81,7 +81,7 @@
 
 <!-- <svelte:window bind:scrollY={y} /> -->
 <div class="col">
-  <div class="blue ulred m1">{date.format('{day-short} {month} {date-ordinal}, {year}')}</div>
+  <!-- <div class="blue ulred m1">{date.format('{day-short} {month} {date-ordinal}, {year}')}</div> -->
   <div class="container shadow" on:scroll={onScroll} bind:this={el}>
     <div class="row grid" style="width:{weekNum * (w - 1)}px">
       {#each Array(weekNum) as _, i}

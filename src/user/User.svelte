@@ -34,25 +34,33 @@
     width: 200px;
     height: 100%;
   }
-
   .container {
     align-items: flex-start;
+    justify-content: flex-start;
     height: 100%;
+  }
+  .middle {
+    justify-content: flex-start;
   }
 </style>
 
 <div class="row container">
+  <!-- left-side -->
   <Scroll />
-  <div id="write">
-    <!-- <pre>{JSON.stringify($data, null, 2)}</pre> -->
-    <Input write={writeNow} />
-    <!-- <Vertical /> -->
-  </div>
-  <div id="date">
-    <div class="row row-right">
-      <button class="rounded" on:click={logout}>logout</button>
+
+  <!-- middle -->
+  <div class="col middle">
+    <div id="write">
+      <Input write={writeNow} />
     </div>
 
   </div>
 
+</div>
+<!-- <pre>{JSON.stringify($data, null, 2)}</pre> -->
+
+<div id="date">
+  <div class="row row-right">
+    <button class="rounded" on:click={logout}>logout</button>
+  </div>
 </div>
