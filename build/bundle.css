@@ -1,7 +1,5 @@
 .svelte-rh6fib{box-sizing:border-box;margin:0;padding:0}.slider.svelte-rh6fib{font-family:sans-serif;scroll-snap-type:y mandatory;display:flex;max-height:30rem;flex-direction:column;-webkit-overflow-scrolling:touch;overflow-y:scroll}section.svelte-rh6fib{border:1px solid white;padding:1rem;min-height:30rem;width:100%;border-radius:4px;scroll-snap-align:start;text-align:center;position:relative}
 .container.svelte-14tyox9{color:white}.button.svelte-14tyox9{color:steelblue;padding:1rem}
-.container.svelte-so7d09{border:1px solid red;scroll-snap-type:y mandatory;height:50px;overflow-y:scroll;overflow-x:hidden}section.svelte-so7d09{height:50px;width:100%;scroll-snap-align:start}
-.container.svelte-12lphu5{color:white}
 .container.svelte-s8eszs{border:2px solid white;border-radius:5px;scroll-snap-type:y mandatory;height:75px;overflow-y:scroll;overflow-x:hidden;min-width:300px}section.svelte-s8eszs{height:75px;width:100%;scroll-snap-align:start;display:flex;justify-content:center;align-items:center}
 .container.svelte-12lphu5{color:white}
 #scroll.svelte-u1gmwd{width:200px;height:100%;overflow-y:scroll;overflow-x:hidden;border-right:4px solid white;padding:1rem}.note.svelte-u1gmwd{height:70px;margin:0.3rem;padding:10px;width:180px;font-size:15px;border:1px solid lightgrey;border-radius:4px}

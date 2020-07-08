@@ -1,6 +1,8 @@
 <script>
   import { onMount } from 'svelte'
   import spacetime from 'spacetime'
+  export let date = null
+  date = spacetime(date)
   const h = 75
   let el
 
@@ -15,7 +17,6 @@
     Sunday: 6,
   }
 
-  export let date = spacetime.today()
   let index = days[date.format('day')]
 
   function debounce(func, wait, immediate) {

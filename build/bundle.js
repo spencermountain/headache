@@ -5092,22 +5092,22 @@ var app = (function () {
     			div1 = element("div");
     			t14 = text(/*index*/ ctx[1]);
     			attr_dev(section0, "class", "svelte-s8eszs");
-    			add_location(section0, file, 69, 2, 1384);
+    			add_location(section0, file, 70, 2, 1396);
     			attr_dev(section1, "class", "svelte-s8eszs");
-    			add_location(section1, file, 70, 2, 1412);
+    			add_location(section1, file, 71, 2, 1424);
     			attr_dev(section2, "class", "svelte-s8eszs");
-    			add_location(section2, file, 71, 2, 1441);
+    			add_location(section2, file, 72, 2, 1453);
     			attr_dev(section3, "class", "svelte-s8eszs");
-    			add_location(section3, file, 72, 2, 1472);
+    			add_location(section3, file, 73, 2, 1484);
     			attr_dev(section4, "class", "svelte-s8eszs");
-    			add_location(section4, file, 73, 2, 1499);
+    			add_location(section4, file, 74, 2, 1511);
     			attr_dev(section5, "class", "svelte-s8eszs");
-    			add_location(section5, file, 74, 2, 1527);
+    			add_location(section5, file, 75, 2, 1539);
     			attr_dev(section6, "class", "svelte-s8eszs");
-    			add_location(section6, file, 75, 2, 1557);
+    			add_location(section6, file, 76, 2, 1569);
     			attr_dev(div0, "class", "container svelte-s8eszs");
-    			add_location(div0, file, 67, 0, 1321);
-    			add_location(div1, file, 77, 0, 1590);
+    			add_location(div0, file, 68, 0, 1333);
+    			add_location(div1, file, 78, 0, 1602);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -5184,6 +5184,8 @@ var app = (function () {
     }
 
     function instance($$self, $$props, $$invalidate) {
+    	let { date = null } = $$props;
+    	date = src(date);
     	let el;
 
     	// set our indexes
@@ -5197,7 +5199,6 @@ var app = (function () {
     		Sunday: 6
     	};
 
-    	let { date = src.today() } = $$props;
     	let index = days[date.format("day")];
 
     	const onScroll = debounce$1(
@@ -5234,19 +5235,19 @@ var app = (function () {
     	$$self.$capture_state = () => ({
     		onMount,
     		spacetime: src,
+    		date,
     		h,
     		el,
     		days,
-    		date,
     		index,
     		debounce: debounce$1,
     		onScroll
     	});
 
     	$$self.$inject_state = $$props => {
+    		if ("date" in $$props) $$invalidate(3, date = $$props.date);
     		if ("el" in $$props) $$invalidate(0, el = $$props.el);
     		if ("days" in $$props) days = $$props.days;
-    		if ("date" in $$props) $$invalidate(3, date = $$props.date);
     		if ("index" in $$props) $$invalidate(1, index = $$props.index);
     	};
 
