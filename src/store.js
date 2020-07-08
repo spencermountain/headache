@@ -1,12 +1,13 @@
 import { writable } from 'svelte/store'
 import spacetime from 'spacetime'
 
-let tmp = 'username'
-let user = writable(tmp)
-let pass = writable('foo')
+let u = window.localStorage.getItem('user') || ''
+let user = writable(u)
+let p = window.localStorage.getItem('pass') || ''
+let pass = writable(p)
 
 let data = writable({
-  _id: tmp,
+  _id: u,
   dates: {},
 })
 

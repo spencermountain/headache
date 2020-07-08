@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import { data, date } from './store'
+  import { data, date } from '../store'
   import debounce from 'lodash/debounce'
   import spacetime from 'spacetime'
   import resizable from './lib/_resizable'
