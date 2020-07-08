@@ -94,6 +94,9 @@ var app = (function () {
     function set_input_value(input, value) {
         input.value = value == null ? '' : value;
     }
+    function set_style(node, key, value, important) {
+        node.style.setProperty(key, value, important ? 'important' : '');
+    }
     function custom_event(type, detail) {
         const e = document.createEvent('CustomEvent');
         e.initCustomEvent(type, false, false, detail);
@@ -127,6 +130,9 @@ var app = (function () {
     }
     function add_render_callback(fn) {
         render_callbacks.push(fn);
+    }
+    function add_flush_callback(fn) {
+        flush_callbacks.push(fn);
     }
     let flushing = false;
     const seen_callbacks = new Set();
@@ -218,6 +224,14 @@ var app = (function () {
         : typeof globalThis !== 'undefined'
             ? globalThis
             : global);
+
+    function bind(component, name, callback) {
+        const index = component.$$.props[name];
+        if (index !== undefined) {
+            component.$$.bound[index] = callback;
+            callback(component.$$.ctx[index]);
+        }
+    }
     function create_component(block) {
         block && block.c();
     }
@@ -4557,495 +4571,37 @@ var app = (function () {
 
     let date = writable(src.today());
 
-    /**
-     * Checks if `value` is the
-     * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
-     * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
-     *
-     * @static
-     * @memberOf _
-     * @since 0.1.0
-     * @category Lang
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is an object, else `false`.
-     * @example
-     *
-     * _.isObject({});
-     * // => true
-     *
-     * _.isObject([1, 2, 3]);
-     * // => true
-     *
-     * _.isObject(_.noop);
-     * // => true
-     *
-     * _.isObject(null);
-     * // => false
-     */
-    function isObject(value) {
-      var type = typeof value;
-      return value != null && (type == 'object' || type == 'function');
+    function debounce(func, wait, immediate) {
+      let timeout;
+      return function () {
+        let context = this,
+          args = arguments;
+        let later = function () {
+          timeout = null;
+          if (!immediate) func.apply(context, args);
+        };
+        let callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+      }
     }
-
-    var isObject_1 = isObject;
-
-    var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-    function createCommonjsModule$1(fn, module) {
-    	return module = { exports: {} }, fn(module, module.exports), module.exports;
-    }
-
-    function commonjsRequire () {
-    	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
-    }
-
-    /** Detect free variable `global` from Node.js. */
-    var freeGlobal = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
-
-    var _freeGlobal = freeGlobal;
-
-    /** Detect free variable `self`. */
-    var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
-
-    /** Used as a reference to the global object. */
-    var root = _freeGlobal || freeSelf || Function('return this')();
-
-    var _root = root;
-
-    /**
-     * Gets the timestamp of the number of milliseconds that have elapsed since
-     * the Unix epoch (1 January 1970 00:00:00 UTC).
-     *
-     * @static
-     * @memberOf _
-     * @since 2.4.0
-     * @category Date
-     * @returns {number} Returns the timestamp.
-     * @example
-     *
-     * _.defer(function(stamp) {
-     *   console.log(_.now() - stamp);
-     * }, _.now());
-     * // => Logs the number of milliseconds it took for the deferred invocation.
-     */
-    var now = function() {
-      return _root.Date.now();
-    };
-
-    var now_1 = now;
-
-    /** Built-in value references. */
-    var Symbol$1 = _root.Symbol;
-
-    var _Symbol = Symbol$1;
-
-    /** Used for built-in method references. */
-    var objectProto = Object.prototype;
-
-    /** Used to check objects for own properties. */
-    var hasOwnProperty = objectProto.hasOwnProperty;
-
-    /**
-     * Used to resolve the
-     * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
-     * of values.
-     */
-    var nativeObjectToString = objectProto.toString;
-
-    /** Built-in value references. */
-    var symToStringTag = _Symbol ? _Symbol.toStringTag : undefined;
-
-    /**
-     * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
-     *
-     * @private
-     * @param {*} value The value to query.
-     * @returns {string} Returns the raw `toStringTag`.
-     */
-    function getRawTag(value) {
-      var isOwn = hasOwnProperty.call(value, symToStringTag),
-          tag = value[symToStringTag];
-
-      try {
-        value[symToStringTag] = undefined;
-        var unmasked = true;
-      } catch (e) {}
-
-      var result = nativeObjectToString.call(value);
-      if (unmasked) {
-        if (isOwn) {
-          value[symToStringTag] = tag;
-        } else {
-          delete value[symToStringTag];
-        }
-      }
-      return result;
-    }
-
-    var _getRawTag = getRawTag;
-
-    /** Used for built-in method references. */
-    var objectProto$1 = Object.prototype;
-
-    /**
-     * Used to resolve the
-     * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
-     * of values.
-     */
-    var nativeObjectToString$1 = objectProto$1.toString;
-
-    /**
-     * Converts `value` to a string using `Object.prototype.toString`.
-     *
-     * @private
-     * @param {*} value The value to convert.
-     * @returns {string} Returns the converted string.
-     */
-    function objectToString(value) {
-      return nativeObjectToString$1.call(value);
-    }
-
-    var _objectToString = objectToString;
-
-    /** `Object#toString` result references. */
-    var nullTag = '[object Null]',
-        undefinedTag = '[object Undefined]';
-
-    /** Built-in value references. */
-    var symToStringTag$1 = _Symbol ? _Symbol.toStringTag : undefined;
-
-    /**
-     * The base implementation of `getTag` without fallbacks for buggy environments.
-     *
-     * @private
-     * @param {*} value The value to query.
-     * @returns {string} Returns the `toStringTag`.
-     */
-    function baseGetTag(value) {
-      if (value == null) {
-        return value === undefined ? undefinedTag : nullTag;
-      }
-      return (symToStringTag$1 && symToStringTag$1 in Object(value))
-        ? _getRawTag(value)
-        : _objectToString(value);
-    }
-
-    var _baseGetTag = baseGetTag;
-
-    /**
-     * Checks if `value` is object-like. A value is object-like if it's not `null`
-     * and has a `typeof` result of "object".
-     *
-     * @static
-     * @memberOf _
-     * @since 4.0.0
-     * @category Lang
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
-     * @example
-     *
-     * _.isObjectLike({});
-     * // => true
-     *
-     * _.isObjectLike([1, 2, 3]);
-     * // => true
-     *
-     * _.isObjectLike(_.noop);
-     * // => false
-     *
-     * _.isObjectLike(null);
-     * // => false
-     */
-    function isObjectLike(value) {
-      return value != null && typeof value == 'object';
-    }
-
-    var isObjectLike_1 = isObjectLike;
-
-    /** `Object#toString` result references. */
-    var symbolTag = '[object Symbol]';
-
-    /**
-     * Checks if `value` is classified as a `Symbol` primitive or object.
-     *
-     * @static
-     * @memberOf _
-     * @since 4.0.0
-     * @category Lang
-     * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
-     * @example
-     *
-     * _.isSymbol(Symbol.iterator);
-     * // => true
-     *
-     * _.isSymbol('abc');
-     * // => false
-     */
-    function isSymbol(value) {
-      return typeof value == 'symbol' ||
-        (isObjectLike_1(value) && _baseGetTag(value) == symbolTag);
-    }
-
-    var isSymbol_1 = isSymbol;
-
-    /** Used as references for various `Number` constants. */
-    var NAN = 0 / 0;
-
-    /** Used to match leading and trailing whitespace. */
-    var reTrim = /^\s+|\s+$/g;
-
-    /** Used to detect bad signed hexadecimal string values. */
-    var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
-
-    /** Used to detect binary string values. */
-    var reIsBinary = /^0b[01]+$/i;
-
-    /** Used to detect octal string values. */
-    var reIsOctal = /^0o[0-7]+$/i;
-
-    /** Built-in method references without a dependency on `root`. */
-    var freeParseInt = parseInt;
-
-    /**
-     * Converts `value` to a number.
-     *
-     * @static
-     * @memberOf _
-     * @since 4.0.0
-     * @category Lang
-     * @param {*} value The value to process.
-     * @returns {number} Returns the number.
-     * @example
-     *
-     * _.toNumber(3.2);
-     * // => 3.2
-     *
-     * _.toNumber(Number.MIN_VALUE);
-     * // => 5e-324
-     *
-     * _.toNumber(Infinity);
-     * // => Infinity
-     *
-     * _.toNumber('3.2');
-     * // => 3.2
-     */
-    function toNumber(value) {
-      if (typeof value == 'number') {
-        return value;
-      }
-      if (isSymbol_1(value)) {
-        return NAN;
-      }
-      if (isObject_1(value)) {
-        var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
-        value = isObject_1(other) ? (other + '') : other;
-      }
-      if (typeof value != 'string') {
-        return value === 0 ? value : +value;
-      }
-      value = value.replace(reTrim, '');
-      var isBinary = reIsBinary.test(value);
-      return (isBinary || reIsOctal.test(value))
-        ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
-        : (reIsBadHex.test(value) ? NAN : +value);
-    }
-
-    var toNumber_1 = toNumber;
-
-    /** Error message constants. */
-    var FUNC_ERROR_TEXT = 'Expected a function';
-
-    /* Built-in method references for those with the same name as other `lodash` methods. */
-    var nativeMax = Math.max,
-        nativeMin = Math.min;
-
-    /**
-     * Creates a debounced function that delays invoking `func` until after `wait`
-     * milliseconds have elapsed since the last time the debounced function was
-     * invoked. The debounced function comes with a `cancel` method to cancel
-     * delayed `func` invocations and a `flush` method to immediately invoke them.
-     * Provide `options` to indicate whether `func` should be invoked on the
-     * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
-     * with the last arguments provided to the debounced function. Subsequent
-     * calls to the debounced function return the result of the last `func`
-     * invocation.
-     *
-     * **Note:** If `leading` and `trailing` options are `true`, `func` is
-     * invoked on the trailing edge of the timeout only if the debounced function
-     * is invoked more than once during the `wait` timeout.
-     *
-     * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
-     * until to the next tick, similar to `setTimeout` with a timeout of `0`.
-     *
-     * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
-     * for details over the differences between `_.debounce` and `_.throttle`.
-     *
-     * @static
-     * @memberOf _
-     * @since 0.1.0
-     * @category Function
-     * @param {Function} func The function to debounce.
-     * @param {number} [wait=0] The number of milliseconds to delay.
-     * @param {Object} [options={}] The options object.
-     * @param {boolean} [options.leading=false]
-     *  Specify invoking on the leading edge of the timeout.
-     * @param {number} [options.maxWait]
-     *  The maximum time `func` is allowed to be delayed before it's invoked.
-     * @param {boolean} [options.trailing=true]
-     *  Specify invoking on the trailing edge of the timeout.
-     * @returns {Function} Returns the new debounced function.
-     * @example
-     *
-     * // Avoid costly calculations while the window size is in flux.
-     * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
-     *
-     * // Invoke `sendMail` when clicked, debouncing subsequent calls.
-     * jQuery(element).on('click', _.debounce(sendMail, 300, {
-     *   'leading': true,
-     *   'trailing': false
-     * }));
-     *
-     * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
-     * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
-     * var source = new EventSource('/stream');
-     * jQuery(source).on('message', debounced);
-     *
-     * // Cancel the trailing debounced invocation.
-     * jQuery(window).on('popstate', debounced.cancel);
-     */
-    function debounce(func, wait, options) {
-      var lastArgs,
-          lastThis,
-          maxWait,
-          result,
-          timerId,
-          lastCallTime,
-          lastInvokeTime = 0,
-          leading = false,
-          maxing = false,
-          trailing = true;
-
-      if (typeof func != 'function') {
-        throw new TypeError(FUNC_ERROR_TEXT);
-      }
-      wait = toNumber_1(wait) || 0;
-      if (isObject_1(options)) {
-        leading = !!options.leading;
-        maxing = 'maxWait' in options;
-        maxWait = maxing ? nativeMax(toNumber_1(options.maxWait) || 0, wait) : maxWait;
-        trailing = 'trailing' in options ? !!options.trailing : trailing;
-      }
-
-      function invokeFunc(time) {
-        var args = lastArgs,
-            thisArg = lastThis;
-
-        lastArgs = lastThis = undefined;
-        lastInvokeTime = time;
-        result = func.apply(thisArg, args);
-        return result;
-      }
-
-      function leadingEdge(time) {
-        // Reset any `maxWait` timer.
-        lastInvokeTime = time;
-        // Start the timer for the trailing edge.
-        timerId = setTimeout(timerExpired, wait);
-        // Invoke the leading edge.
-        return leading ? invokeFunc(time) : result;
-      }
-
-      function remainingWait(time) {
-        var timeSinceLastCall = time - lastCallTime,
-            timeSinceLastInvoke = time - lastInvokeTime,
-            timeWaiting = wait - timeSinceLastCall;
-
-        return maxing
-          ? nativeMin(timeWaiting, maxWait - timeSinceLastInvoke)
-          : timeWaiting;
-      }
-
-      function shouldInvoke(time) {
-        var timeSinceLastCall = time - lastCallTime,
-            timeSinceLastInvoke = time - lastInvokeTime;
-
-        // Either this is the first call, activity has stopped and we're at the
-        // trailing edge, the system time has gone backwards and we're treating
-        // it as the trailing edge, or we've hit the `maxWait` limit.
-        return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
-          (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
-      }
-
-      function timerExpired() {
-        var time = now_1();
-        if (shouldInvoke(time)) {
-          return trailingEdge(time);
-        }
-        // Restart the timer.
-        timerId = setTimeout(timerExpired, remainingWait(time));
-      }
-
-      function trailingEdge(time) {
-        timerId = undefined;
-
-        // Only invoke if we have `lastArgs` which means `func` has been
-        // debounced at least once.
-        if (trailing && lastArgs) {
-          return invokeFunc(time);
-        }
-        lastArgs = lastThis = undefined;
-        return result;
-      }
-
-      function cancel() {
-        if (timerId !== undefined) {
-          clearTimeout(timerId);
-        }
-        lastInvokeTime = 0;
-        lastArgs = lastCallTime = lastThis = timerId = undefined;
-      }
-
-      function flush() {
-        return timerId === undefined ? result : trailingEdge(now_1());
-      }
-
-      function debounced() {
-        var time = now_1(),
-            isInvoking = shouldInvoke(time);
-
-        lastArgs = arguments;
-        lastThis = this;
-        lastCallTime = time;
-
-        if (isInvoking) {
-          if (timerId === undefined) {
-            return leadingEdge(lastCallTime);
-          }
-          if (maxing) {
-            // Handle invocations in a tight loop.
-            clearTimeout(timerId);
-            timerId = setTimeout(timerExpired, wait);
-            return invokeFunc(lastCallTime);
-          }
-        }
-        if (timerId === undefined) {
-          timerId = setTimeout(timerExpired, wait);
-        }
-        return result;
-      }
-      debounced.cancel = cancel;
-      debounced.flush = flush;
-      return debounced;
-    }
-
-    var debounce_1 = debounce;
 
     /* src/user/DayPick.svelte generated by Svelte v3.23.0 */
+
+    const { Object: Object_1, console: console_1 } = globals;
     const file = "src/user/DayPick.svelte";
 
-    function create_fragment(ctx) {
-    	let div0;
+    function get_each_context(ctx, list, i) {
+    	const child_ctx = ctx.slice();
+    	child_ctx[9] = list[i];
+    	child_ctx[11] = i;
+    	return child_ctx;
+    }
+
+    // (87:6) {#each Array(weekNum) as _, i}
+    function create_each_block(ctx) {
+    	let div;
     	let section0;
     	let t1;
     	let section1;
@@ -5060,14 +4616,10 @@ var app = (function () {
     	let t11;
     	let section6;
     	let t13;
-    	let div1;
-    	let t14;
-    	let mounted;
-    	let dispose;
 
     	const block = {
     		c: function create() {
-    			div0 = element("div");
+    			div = element("div");
     			section0 = element("section");
     			section0.textContent = "monday";
     			t1 = space();
@@ -5078,7 +4630,7 @@ var app = (function () {
     			section2.textContent = "wednesday";
     			t5 = space();
     			section3 = element("section");
-    			section3.textContent = "thurs";
+    			section3.textContent = "thursday";
     			t7 = space();
     			section4 = element("section");
     			section4.textContent = "friday";
@@ -5089,64 +4641,139 @@ var app = (function () {
     			section6 = element("section");
     			section6.textContent = "sunday";
     			t13 = space();
+    			attr_dev(section0, "class", "svelte-w9izv6");
+    			add_location(section0, file, 88, 10, 2006);
+    			attr_dev(section1, "class", "svelte-w9izv6");
+    			add_location(section1, file, 89, 10, 2042);
+    			attr_dev(section2, "class", "svelte-w9izv6");
+    			add_location(section2, file, 90, 10, 2079);
+    			attr_dev(section3, "class", "svelte-w9izv6");
+    			add_location(section3, file, 91, 10, 2118);
+    			attr_dev(section4, "class", "svelte-w9izv6");
+    			add_location(section4, file, 92, 10, 2156);
+    			attr_dev(section5, "class", "svelte-w9izv6");
+    			add_location(section5, file, 93, 10, 2192);
+    			attr_dev(section6, "class", "svelte-w9izv6");
+    			add_location(section6, file, 94, 10, 2230);
+    			attr_dev(div, "class", "week svelte-w9izv6");
+    			add_location(div, file, 87, 8, 1977);
+    		},
+    		m: function mount(target, anchor) {
+    			insert_dev(target, div, anchor);
+    			append_dev(div, section0);
+    			append_dev(div, t1);
+    			append_dev(div, section1);
+    			append_dev(div, t3);
+    			append_dev(div, section2);
+    			append_dev(div, t5);
+    			append_dev(div, section3);
+    			append_dev(div, t7);
+    			append_dev(div, section4);
+    			append_dev(div, t9);
+    			append_dev(div, section5);
+    			append_dev(div, t11);
+    			append_dev(div, section6);
+    			append_dev(div, t13);
+    		},
+    		d: function destroy(detaching) {
+    			if (detaching) detach_dev(div);
+    		}
+    	};
+
+    	dispatch_dev("SvelteRegisterBlock", {
+    		block,
+    		id: create_each_block.name,
+    		type: "each",
+    		source: "(87:6) {#each Array(weekNum) as _, i}",
+    		ctx
+    	});
+
+    	return block;
+    }
+
+    function create_fragment(ctx) {
+    	let div3;
+    	let div0;
+    	let t0_value = /*date*/ ctx[0].format("{day-short} {month} {date-ordinal}, {year}") + "";
+    	let t0;
+    	let t1;
+    	let div2;
+    	let div1;
+    	let mounted;
+    	let dispose;
+    	let each_value = Array(weekNum);
+    	validate_each_argument(each_value);
+    	let each_blocks = [];
+
+    	for (let i = 0; i < each_value.length; i += 1) {
+    		each_blocks[i] = create_each_block(get_each_context(ctx, each_value, i));
+    	}
+
+    	const block = {
+    		c: function create() {
+    			div3 = element("div");
+    			div0 = element("div");
+    			t0 = text(t0_value);
+    			t1 = space();
+    			div2 = element("div");
     			div1 = element("div");
-    			t14 = text(/*index*/ ctx[1]);
-    			attr_dev(section0, "class", "svelte-s8eszs");
-    			add_location(section0, file, 70, 2, 1396);
-    			attr_dev(section1, "class", "svelte-s8eszs");
-    			add_location(section1, file, 71, 2, 1424);
-    			attr_dev(section2, "class", "svelte-s8eszs");
-    			add_location(section2, file, 72, 2, 1453);
-    			attr_dev(section3, "class", "svelte-s8eszs");
-    			add_location(section3, file, 73, 2, 1484);
-    			attr_dev(section4, "class", "svelte-s8eszs");
-    			add_location(section4, file, 74, 2, 1511);
-    			attr_dev(section5, "class", "svelte-s8eszs");
-    			add_location(section5, file, 75, 2, 1539);
-    			attr_dev(section6, "class", "svelte-s8eszs");
-    			add_location(section6, file, 76, 2, 1569);
-    			attr_dev(div0, "class", "container svelte-s8eszs");
-    			add_location(div0, file, 68, 0, 1333);
-    			add_location(div1, file, 78, 0, 1602);
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].c();
+    			}
+
+    			attr_dev(div0, "class", "blue ulred m1");
+    			add_location(div0, file, 83, 2, 1707);
+    			attr_dev(div1, "class", "row grid svelte-w9izv6");
+    			set_style(div1, "width", weekNum * (w - 1) + "px");
+    			add_location(div1, file, 85, 4, 1873);
+    			attr_dev(div2, "class", "container shadow svelte-w9izv6");
+    			add_location(div2, file, 84, 2, 1802);
+    			attr_dev(div3, "class", "col");
+    			add_location(div3, file, 82, 0, 1687);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div0, anchor);
-    			append_dev(div0, section0);
-    			append_dev(div0, t1);
-    			append_dev(div0, section1);
-    			append_dev(div0, t3);
-    			append_dev(div0, section2);
-    			append_dev(div0, t5);
-    			append_dev(div0, section3);
-    			append_dev(div0, t7);
-    			append_dev(div0, section4);
-    			append_dev(div0, t9);
-    			append_dev(div0, section5);
-    			append_dev(div0, t11);
-    			append_dev(div0, section6);
-    			/*div0_binding*/ ctx[5](div0);
-    			insert_dev(target, t13, anchor);
-    			insert_dev(target, div1, anchor);
-    			append_dev(div1, t14);
+    			insert_dev(target, div3, anchor);
+    			append_dev(div3, div0);
+    			append_dev(div0, t0);
+    			append_dev(div3, t1);
+    			append_dev(div3, div2);
+    			append_dev(div2, div1);
+
+    			for (let i = 0; i < each_blocks.length; i += 1) {
+    				each_blocks[i].m(div1, null);
+    			}
+
+    			/*div2_binding*/ ctx[8](div2);
 
     			if (!mounted) {
-    				dispose = listen_dev(div0, "scroll", /*onScroll*/ ctx[2], false, false, false);
+    				dispose = listen_dev(
+    					div2,
+    					"scroll",
+    					function () {
+    						if (is_function(/*onScroll*/ ctx[2])) /*onScroll*/ ctx[2].apply(this, arguments);
+    					},
+    					false,
+    					false,
+    					false
+    				);
+
     				mounted = true;
     			}
     		},
-    		p: function update(ctx, [dirty]) {
-    			if (dirty & /*index*/ 2) set_data_dev(t14, /*index*/ ctx[1]);
+    		p: function update(new_ctx, [dirty]) {
+    			ctx = new_ctx;
+    			if (dirty & /*date*/ 1 && t0_value !== (t0_value = /*date*/ ctx[0].format("{day-short} {month} {date-ordinal}, {year}") + "")) set_data_dev(t0, t0_value);
     		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div0);
-    			/*div0_binding*/ ctx[5](null);
-    			if (detaching) detach_dev(t13);
-    			if (detaching) detach_dev(div1);
+    			if (detaching) detach_dev(div3);
+    			destroy_each(each_blocks, detaching);
+    			/*div2_binding*/ ctx[8](null);
     			mounted = false;
     			dispose();
     		}
@@ -5164,29 +4791,14 @@ var app = (function () {
     }
 
     const h = 75;
-
-    function debounce$1(func, wait, immediate) {
-    	let timeout;
-
-    	return function () {
-    		let context = this, args = arguments;
-
-    		let later = function () {
-    			timeout = null;
-    			if (!immediate) func.apply(context, args);
-    		};
-
-    		let callNow = immediate && !timeout;
-    		clearTimeout(timeout);
-    		timeout = setTimeout(later, wait);
-    		if (callNow) func.apply(context, args);
-    	};
-    }
+    const w = 300;
+    const weekNum = 4;
 
     function instance($$self, $$props, $$invalidate) {
-    	let { date = null } = $$props;
+    	let { date = null } = $$props; //thursday
     	date = src(date);
     	let el;
+    	let topLeft = date.clone().startOf("week").minus(weekNum - 1, "weeks");
 
     	// set our indexes
     	let days = {
@@ -5199,69 +4811,90 @@ var app = (function () {
     		Sunday: 6
     	};
 
-    	let index = days[date.format("day")];
+    	let dayArr = Object.keys(days);
+    	let yIndex = days[date.format("day")];
+    	let xIndex = weekNum - 1;
 
-    	const onScroll = debounce$1(
-    		function (e) {
-    			let y = el.scrollTop;
-    			$$invalidate(1, index = y / h);
-    		},
-    		300
-    	);
+    	let onScroll = () => {
+    		
+    	};
 
     	onMount(() => {
-    		$$invalidate(0, el.scrollTop = index * h, el);
+    		$$invalidate(1, el.scrollTop = yIndex * h, el);
+    		$$invalidate(1, el.scrollLeft = xIndex * w, el);
+    		console.log("mount");
+
+    		$$invalidate(2, onScroll = debounce(
+    			function (e) {
+    				yIndex = Math.round(el.scrollTop / h);
+    				xIndex = Math.round(el.scrollLeft / w);
+    				console.log("scrolled");
+    				console.log(xIndex);
+    				$$invalidate(0, date = topLeft.day(dayArr[yIndex]));
+    				$$invalidate(0, date = date.add(xIndex, "weeks"));
+    			},
+    			300
+    		));
     	});
 
     	const writable_props = ["date"];
 
-    	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<DayPick> was created with unknown prop '${key}'`);
+    	Object_1.keys($$props).forEach(key => {
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1.warn(`<DayPick> was created with unknown prop '${key}'`);
     	});
 
     	let { $$slots = {}, $$scope } = $$props;
     	validate_slots("DayPick", $$slots, []);
 
-    	function div0_binding($$value) {
+    	function div2_binding($$value) {
     		binding_callbacks[$$value ? "unshift" : "push"](() => {
-    			$$invalidate(0, el = $$value);
+    			$$invalidate(1, el = $$value);
     		});
     	}
 
     	$$self.$set = $$props => {
-    		if ("date" in $$props) $$invalidate(3, date = $$props.date);
+    		if ("date" in $$props) $$invalidate(0, date = $$props.date);
     	};
 
     	$$self.$capture_state = () => ({
     		onMount,
     		spacetime: src,
+    		debounce,
     		date,
     		h,
+    		w,
+    		weekNum,
     		el,
+    		topLeft,
     		days,
-    		index,
-    		debounce: debounce$1,
+    		dayArr,
+    		yIndex,
+    		xIndex,
     		onScroll
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("date" in $$props) $$invalidate(3, date = $$props.date);
-    		if ("el" in $$props) $$invalidate(0, el = $$props.el);
+    		if ("date" in $$props) $$invalidate(0, date = $$props.date);
+    		if ("el" in $$props) $$invalidate(1, el = $$props.el);
+    		if ("topLeft" in $$props) topLeft = $$props.topLeft;
     		if ("days" in $$props) days = $$props.days;
-    		if ("index" in $$props) $$invalidate(1, index = $$props.index);
+    		if ("dayArr" in $$props) dayArr = $$props.dayArr;
+    		if ("yIndex" in $$props) yIndex = $$props.yIndex;
+    		if ("xIndex" in $$props) xIndex = $$props.xIndex;
+    		if ("onScroll" in $$props) $$invalidate(2, onScroll = $$props.onScroll);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [el, index, onScroll, date, days, div0_binding];
+    	return [date, el, onScroll, yIndex, xIndex, topLeft, days, dayArr, div2_binding];
     }
 
     class DayPick extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance, create_fragment, safe_not_equal, { date: 3 });
+    		init(this, options, instance, create_fragment, safe_not_equal, { date: 0 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -5298,52 +4931,95 @@ var app = (function () {
     const file$1 = "src/user/Input.svelte";
 
     function create_fragment$1(ctx) {
-    	let div;
+    	let div0;
+    	let t0_value = src(/*$date*/ ctx[2]).format("{day-short} {month} {date}") + "";
+    	let t0;
+    	let t1;
+    	let div2;
     	let textarea;
-    	let t;
+    	let t2;
+    	let div1;
+    	let updating_date;
     	let current;
     	let mounted;
     	let dispose;
-    	const daypick = new DayPick({ $$inline: true });
+
+    	function daypick_date_binding(value) {
+    		/*daypick_date_binding*/ ctx[9].call(null, value);
+    	}
+
+    	let daypick_props = {};
+
+    	if (/*$date*/ ctx[2] !== void 0) {
+    		daypick_props.date = /*$date*/ ctx[2];
+    	}
+
+    	const daypick = new DayPick({ props: daypick_props, $$inline: true });
+    	binding_callbacks.push(() => bind(daypick, "date", daypick_date_binding));
 
     	const block = {
     		c: function create() {
-    			div = element("div");
+    			div0 = element("div");
+    			t0 = text(t0_value);
+    			t1 = space();
+    			div2 = element("div");
     			textarea = element("textarea");
-    			t = space();
+    			t2 = space();
+    			div1 = element("div");
     			create_component(daypick.$$.fragment);
-    			attr_dev(textarea, "class", "textarea");
+    			attr_dev(div0, "class", "f1");
+    			set_style(div0, "text-align", "left");
+    			add_location(div0, file$1, 67, 0, 1354);
+    			attr_dev(textarea, "class", "note svelte-flwh3b");
     			attr_dev(textarea, "spellcheck", "false");
     			attr_dev(textarea, "resizable", "false");
-    			add_location(textarea, file$1, 51, 2, 1099);
-    			attr_dev(div, "class", "container row svelte-12lphu5");
-    			add_location(div, file$1, 49, 0, 973);
+    			add_location(textarea, file$1, 69, 2, 1487);
+    			attr_dev(div1, "class", "picker svelte-flwh3b");
+    			add_location(div1, file$1, 76, 2, 1642);
+    			attr_dev(div2, "class", "container row svelte-flwh3b");
+    			add_location(div2, file$1, 68, 0, 1457);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div, anchor);
-    			append_dev(div, textarea);
-    			set_input_value(textarea, /*$data*/ ctx[2].dates[/*fmt*/ ctx[0]]);
+    			insert_dev(target, div0, anchor);
+    			append_dev(div0, t0);
+    			insert_dev(target, t1, anchor);
+    			insert_dev(target, div2, anchor);
+    			append_dev(div2, textarea);
+    			set_input_value(textarea, /*$data*/ ctx[3].dates[/*fmt*/ ctx[0]]);
     			/*textarea_binding*/ ctx[8](textarea);
-    			append_dev(div, t);
-    			mount_component(daypick, div, null);
+    			append_dev(div2, t2);
+    			append_dev(div2, div1);
+    			mount_component(daypick, div1, null);
     			current = true;
 
     			if (!mounted) {
     				dispose = [
     					listen_dev(textarea, "input", /*textarea_input_handler*/ ctx[7]),
-    					listen_dev(textarea, "input", /*didChange*/ ctx[3], false, false, false)
+    					listen_dev(textarea, "input", /*didChange*/ ctx[4], false, false, false)
     				];
 
     				mounted = true;
     			}
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*$data, fmt*/ 5) {
-    				set_input_value(textarea, /*$data*/ ctx[2].dates[/*fmt*/ ctx[0]]);
+    			if ((!current || dirty & /*$date*/ 4) && t0_value !== (t0_value = src(/*$date*/ ctx[2]).format("{day-short} {month} {date}") + "")) set_data_dev(t0, t0_value);
+
+    			if (dirty & /*$data, fmt*/ 9) {
+    				set_input_value(textarea, /*$data*/ ctx[3].dates[/*fmt*/ ctx[0]]);
     			}
+
+    			const daypick_changes = {};
+
+    			if (!updating_date && dirty & /*$date*/ 4) {
+    				updating_date = true;
+    				daypick_changes.date = /*$date*/ ctx[2];
+    				add_flush_callback(() => updating_date = false);
+    			}
+
+    			daypick.$set(daypick_changes);
     		},
     		i: function intro(local) {
     			if (current) return;
@@ -5355,7 +5031,9 @@ var app = (function () {
     			current = false;
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div);
+    			if (detaching) detach_dev(div0);
+    			if (detaching) detach_dev(t1);
+    			if (detaching) detach_dev(div2);
     			/*textarea_binding*/ ctx[8](null);
     			destroy_component(daypick);
     			mounted = false;
@@ -5378,9 +5056,9 @@ var app = (function () {
     	let $date;
     	let $data;
     	validate_store(date, "date");
-    	component_subscribe($$self, date, $$value => $$invalidate(6, $date = $$value));
+    	component_subscribe($$self, date, $$value => $$invalidate(2, $date = $$value));
     	validate_store(data$1, "data");
-    	component_subscribe($$self, data$1, $$value => $$invalidate(2, $data = $$value));
+    	component_subscribe($$self, data$1, $$value => $$invalidate(3, $data = $$value));
 
     	let { write = () => {
     		
@@ -5393,7 +5071,7 @@ var app = (function () {
     	let el = null;
 
     	onMount(() => {
-    		resizable(el);
+    		// resizable(el)
     		el.focus();
     	});
 
@@ -5413,11 +5091,16 @@ var app = (function () {
     	});
 
     	// send update to server
-    	const didChange = debounce_1(
+    	const didChange = debounce(
     		e => {
     			data$1.update(val => {
     				val.dates = val.dates || {};
     				val.dates[fmt] = value;
+
+    				if (value === "") {
+    					delete val.dates[fmt];
+    				}
+
     				write();
     				return val;
     			});
@@ -5446,15 +5129,20 @@ var app = (function () {
     		});
     	}
 
+    	function daypick_date_binding(value) {
+    		$date = value;
+    		date.set($date);
+    	}
+
     	$$self.$set = $$props => {
-    		if ("write" in $$props) $$invalidate(4, write = $$props.write);
+    		if ("write" in $$props) $$invalidate(5, write = $$props.write);
     	};
 
     	$$self.$capture_state = () => ({
     		onMount,
     		data: data$1,
     		date,
-    		debounce: debounce_1,
+    		debounce,
     		DayPick,
     		spacetime: src,
     		resizable,
@@ -5468,7 +5156,7 @@ var app = (function () {
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("write" in $$props) $$invalidate(4, write = $$props.write);
+    		if ("write" in $$props) $$invalidate(5, write = $$props.write);
     		if ("value" in $$props) value = $$props.value;
     		if ("fmt" in $$props) $$invalidate(0, fmt = $$props.fmt);
     		if ("el" in $$props) $$invalidate(1, el = $$props.el);
@@ -5481,20 +5169,21 @@ var app = (function () {
     	return [
     		fmt,
     		el,
+    		$date,
     		$data,
     		didChange,
     		write,
     		value,
-    		$date,
     		textarea_input_handler,
-    		textarea_binding
+    		textarea_binding,
+    		daypick_date_binding
     	];
     }
 
     class Input extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$1, create_fragment$1, safe_not_equal, { write: 4 });
+    		init(this, options, instance$1, create_fragment$1, safe_not_equal, { write: 5 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -5515,17 +5204,17 @@ var app = (function () {
 
     /* src/user/Scroll.svelte generated by Svelte v3.23.0 */
 
-    const { Object: Object_1 } = globals;
+    const { Object: Object_1$1 } = globals;
     const file$2 = "src/user/Scroll.svelte";
 
-    function get_each_context(ctx, list, i) {
+    function get_each_context$1(ctx, list, i) {
     	const child_ctx = ctx.slice();
     	child_ctx[1] = list[i];
     	return child_ctx;
     }
 
-    // (26:2) {#each Object.keys($data.dates) as date}
-    function create_each_block(ctx) {
+    // (37:4) {#each Object.keys($data.dates) as date}
+    function create_each_block$1(ctx) {
     	let div1;
     	let div0;
     	let t0_value = /*date*/ ctx[1] + "";
@@ -5539,9 +5228,9 @@ var app = (function () {
     			t0 = text(t0_value);
     			t1 = space();
     			attr_dev(div0, "class", "left blue ulred");
-    			add_location(div0, file$2, 27, 6, 487);
-    			attr_dev(div1, "class", "col note svelte-u1gmwd");
-    			add_location(div1, file$2, 26, 4, 458);
+    			add_location(div0, file$2, 38, 8, 794);
+    			attr_dev(div1, "class", "col note shadow svelte-1ewbk16");
+    			add_location(div1, file$2, 37, 6, 756);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div1, anchor);
@@ -5559,9 +5248,9 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_each_block.name,
+    		id: create_each_block$1.name,
     		type: "each",
-    		source: "(26:2) {#each Object.keys($data.dates) as date}",
+    		source: "(37:4) {#each Object.keys($data.dates) as date}",
     		ctx
     	});
 
@@ -5569,52 +5258,74 @@ var app = (function () {
     }
 
     function create_fragment$2(ctx) {
-    	let div;
+    	let div2;
+    	let div0;
+    	let t0_value = Object.keys(/*$data*/ ctx[0].dates).length + "";
+    	let t0;
+    	let t1;
+    	let t2;
+    	let div1;
     	let each_value = Object.keys(/*$data*/ ctx[0].dates);
     	validate_each_argument(each_value);
     	let each_blocks = [];
 
     	for (let i = 0; i < each_value.length; i += 1) {
-    		each_blocks[i] = create_each_block(get_each_context(ctx, each_value, i));
+    		each_blocks[i] = create_each_block$1(get_each_context$1(ctx, each_value, i));
     	}
 
     	const block = {
     		c: function create() {
-    			div = element("div");
+    			div2 = element("div");
+    			div0 = element("div");
+    			t0 = text(t0_value);
+    			t1 = text(" notes:");
+    			t2 = space();
+    			div1 = element("div");
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			attr_dev(div, "id", "scroll");
-    			attr_dev(div, "class", "svelte-u1gmwd");
-    			add_location(div, file$2, 24, 0, 393);
+    			attr_dev(div0, "class", "f1 counter svelte-1ewbk16");
+    			add_location(div0, file$2, 34, 2, 611);
+    			attr_dev(div1, "class", "scroll svelte-1ewbk16");
+    			add_location(div1, file$2, 35, 2, 684);
+    			attr_dev(div2, "id", "scroll");
+    			attr_dev(div2, "class", "svelte-1ewbk16");
+    			add_location(div2, file$2, 33, 0, 591);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div, anchor);
+    			insert_dev(target, div2, anchor);
+    			append_dev(div2, div0);
+    			append_dev(div0, t0);
+    			append_dev(div0, t1);
+    			append_dev(div2, t2);
+    			append_dev(div2, div1);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(div, null);
+    				each_blocks[i].m(div1, null);
     			}
     		},
     		p: function update(ctx, [dirty]) {
+    			if (dirty & /*$data*/ 1 && t0_value !== (t0_value = Object.keys(/*$data*/ ctx[0].dates).length + "")) set_data_dev(t0, t0_value);
+
     			if (dirty & /*Object, $data*/ 1) {
     				each_value = Object.keys(/*$data*/ ctx[0].dates);
     				validate_each_argument(each_value);
     				let i;
 
     				for (i = 0; i < each_value.length; i += 1) {
-    					const child_ctx = get_each_context(ctx, each_value, i);
+    					const child_ctx = get_each_context$1(ctx, each_value, i);
 
     					if (each_blocks[i]) {
     						each_blocks[i].p(child_ctx, dirty);
     					} else {
-    						each_blocks[i] = create_each_block(child_ctx);
+    						each_blocks[i] = create_each_block$1(child_ctx);
     						each_blocks[i].c();
-    						each_blocks[i].m(div, null);
+    						each_blocks[i].m(div1, null);
     					}
     				}
 
@@ -5628,7 +5339,7 @@ var app = (function () {
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div);
+    			if (detaching) detach_dev(div2);
     			destroy_each(each_blocks, detaching);
     		}
     	};
@@ -5650,7 +5361,7 @@ var app = (function () {
     	component_subscribe($$self, data$1, $$value => $$invalidate(0, $data = $$value));
     	const writable_props = [];
 
-    	Object_1.keys($$props).forEach(key => {
+    	Object_1$1.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Scroll> was created with unknown prop '${key}'`);
     	});
 
@@ -5678,14 +5389,14 @@ var app = (function () {
 
     const file$3 = "components/Vertical.svelte";
 
-    function get_each_context$1(ctx, list, i) {
+    function get_each_context$2(ctx, list, i) {
     	const child_ctx = ctx.slice();
     	child_ctx[1] = list[i];
     	return child_ctx;
     }
 
     // (34:2) {#each sections as section}
-    function create_each_block$1(ctx) {
+    function create_each_block$2(ctx) {
     	let section;
     	let div;
     	let t0_value = /*section*/ ctx[1] + "";
@@ -5719,7 +5430,7 @@ var app = (function () {
 
     	dispatch_dev("SvelteRegisterBlock", {
     		block,
-    		id: create_each_block$1.name,
+    		id: create_each_block$2.name,
     		type: "each",
     		source: "(34:2) {#each sections as section}",
     		ctx
@@ -5735,7 +5446,7 @@ var app = (function () {
     	let each_blocks = [];
 
     	for (let i = 0; i < each_value.length; i += 1) {
-    		each_blocks[i] = create_each_block$1(get_each_context$1(ctx, each_value, i));
+    		each_blocks[i] = create_each_block$2(get_each_context$2(ctx, each_value, i));
     	}
 
     	const block = {
@@ -5766,12 +5477,12 @@ var app = (function () {
     				let i;
 
     				for (i = 0; i < each_value.length; i += 1) {
-    					const child_ctx = get_each_context$1(ctx, each_value, i);
+    					const child_ctx = get_each_context$2(ctx, each_value, i);
 
     					if (each_blocks[i]) {
     						each_blocks[i].p(child_ctx, dirty);
     					} else {
-    						each_blocks[i] = create_each_block$1(child_ctx);
+    						each_blocks[i] = create_each_block$2(child_ctx);
     						each_blocks[i].c();
     						each_blocks[i].m(div, null);
     					}
@@ -5887,6 +5598,16 @@ var app = (function () {
       let res = await db.put(obj);
       return res
     };
+
+    var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+    function createCommonjsModule$1(fn, module) {
+    	return module = { exports: {} }, fn(module, module.exports), module.exports;
+    }
+
+    function commonjsRequire () {
+    	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
+    }
 
     var require$$0 = {};
 
@@ -12422,46 +12143,35 @@ var app = (function () {
     const file$4 = "src/user/User.svelte";
 
     function create_fragment$4(ctx) {
-    	let div5;
+    	let div3;
     	let t0;
     	let div0;
     	let t1;
-    	let div4;
+    	let div2;
     	let div1;
     	let button;
-    	let t3;
-    	let div2;
-    	let t4_value = /*$date*/ ctx[1].format("{month} {date-ordinal}") + "";
-    	let t4;
-    	let t5;
-    	let div3;
     	let current;
     	let mounted;
     	let dispose;
     	const scroll = new Scroll({ $$inline: true });
 
     	const input = new Input({
-    			props: { write: /*writeNow*/ ctx[2] },
+    			props: { write: /*writeNow*/ ctx[1] },
     			$$inline: true
     		});
 
     	const block = {
     		c: function create() {
-    			div5 = element("div");
+    			div3 = element("div");
     			create_component(scroll.$$.fragment);
     			t0 = space();
     			div0 = element("div");
     			create_component(input.$$.fragment);
     			t1 = space();
-    			div4 = element("div");
+    			div2 = element("div");
     			div1 = element("div");
     			button = element("button");
     			button.textContent = "logout";
-    			t3 = space();
-    			div2 = element("div");
-    			t4 = text(t4_value);
-    			t5 = space();
-    			div3 = element("div");
     			attr_dev(div0, "id", "write");
     			attr_dev(div0, "class", "svelte-2vp6ur");
     			add_location(div0, file$4, 45, 2, 901);
@@ -12469,34 +12179,25 @@ var app = (function () {
     			add_location(button, file$4, 52, 6, 1097);
     			attr_dev(div1, "class", "row row-right svelte-2vp6ur");
     			add_location(div1, file$4, 51, 4, 1063);
-    			attr_dev(div2, "class", "f2 blue");
-    			add_location(div2, file$4, 54, 4, 1170);
-    			attr_dev(div3, "class", "mt3");
-    			add_location(div3, file$4, 55, 4, 1242);
-    			attr_dev(div4, "id", "date");
-    			attr_dev(div4, "class", "svelte-2vp6ur");
-    			add_location(div4, file$4, 50, 2, 1043);
-    			attr_dev(div5, "class", "row container svelte-2vp6ur");
-    			add_location(div5, file$4, 43, 0, 858);
+    			attr_dev(div2, "id", "date");
+    			attr_dev(div2, "class", "svelte-2vp6ur");
+    			add_location(div2, file$4, 50, 2, 1043);
+    			attr_dev(div3, "class", "row container svelte-2vp6ur");
+    			add_location(div3, file$4, 43, 0, 858);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div5, anchor);
-    			mount_component(scroll, div5, null);
-    			append_dev(div5, t0);
-    			append_dev(div5, div0);
+    			insert_dev(target, div3, anchor);
+    			mount_component(scroll, div3, null);
+    			append_dev(div3, t0);
+    			append_dev(div3, div0);
     			mount_component(input, div0, null);
-    			append_dev(div5, t1);
-    			append_dev(div5, div4);
-    			append_dev(div4, div1);
+    			append_dev(div3, t1);
+    			append_dev(div3, div2);
+    			append_dev(div2, div1);
     			append_dev(div1, button);
-    			append_dev(div4, t3);
-    			append_dev(div4, div2);
-    			append_dev(div2, t4);
-    			append_dev(div4, t5);
-    			append_dev(div4, div3);
     			current = true;
 
     			if (!mounted) {
@@ -12516,7 +12217,6 @@ var app = (function () {
     		},
     		p: function update(new_ctx, [dirty]) {
     			ctx = new_ctx;
-    			if ((!current || dirty & /*$date*/ 2) && t4_value !== (t4_value = /*$date*/ ctx[1].format("{month} {date-ordinal}") + "")) set_data_dev(t4, t4_value);
     		},
     		i: function intro(local) {
     			if (current) return;
@@ -12530,7 +12230,7 @@ var app = (function () {
     			current = false;
     		},
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div5);
+    			if (detaching) detach_dev(div3);
     			destroy_component(scroll);
     			destroy_component(input);
     			mounted = false;
@@ -12553,15 +12253,12 @@ var app = (function () {
     	let $user;
     	let $pass;
     	let $data;
-    	let $date;
     	validate_store(user, "user");
-    	component_subscribe($$self, user, $$value => $$invalidate(3, $user = $$value));
+    	component_subscribe($$self, user, $$value => $$invalidate(2, $user = $$value));
     	validate_store(pass, "pass");
-    	component_subscribe($$self, pass, $$value => $$invalidate(4, $pass = $$value));
+    	component_subscribe($$self, pass, $$value => $$invalidate(3, $pass = $$value));
     	validate_store(data$1, "data");
-    	component_subscribe($$self, data$1, $$value => $$invalidate(5, $data = $$value));
-    	validate_store(date, "date");
-    	component_subscribe($$self, date, $$value => $$invalidate(1, $date = $$value));
+    	component_subscribe($$self, data$1, $$value => $$invalidate(4, $data = $$value));
     	let { logout } = $$props;
 
     	// listen for username changes
@@ -12603,8 +12300,7 @@ var app = (function () {
     		writeNow,
     		$user,
     		$pass,
-    		$data,
-    		$date
+    		$data
     	});
 
     	$$self.$inject_state = $$props => {
@@ -12615,7 +12311,7 @@ var app = (function () {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [logout, $date, writeNow];
+    	return [logout, writeNow];
     }
 
     class User extends SvelteComponentDev {

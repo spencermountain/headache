@@ -52,10 +52,7 @@
     <div class="row row-right">
       <button class="rounded" on:click={logout}>logout</button>
     </div>
-    <div class="f2 blue">{$date.format('{month} {date-ordinal}')}</div>
-    <div class="mt3">
-      <!-- <DayPick /> -->
-    </div>
+
   </div>
 
 </div>
