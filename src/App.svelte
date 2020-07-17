@@ -1,6 +1,7 @@
 <script>
   import User from './user/User.svelte'
   import Login from './Login.svelte'
+  import DayPick from '../components/DayPick/DayPick.svelte'
   import CodeMirror from '../components/CodeMirror/CodeMirror.svelte'
   import { user, pass, data } from './store'
   const logout = function() {
@@ -26,6 +27,7 @@
 
 <CodeMirror bind:text {highlight} />
 {text}
+<DayPick callback={date => console.log(date.format())} />
 {#if !$user}
   <!-- <Login /> -->
 {:else}

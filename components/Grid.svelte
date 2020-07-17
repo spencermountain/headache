@@ -14,7 +14,6 @@
     display: flex;
     -webkit-overflow-scrolling: touch;
     overflow-x: scroll;
-
     overscroll-behavior-x: none;
   }
   section {
