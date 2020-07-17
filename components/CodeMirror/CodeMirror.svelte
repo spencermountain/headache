@@ -49,4 +49,4 @@
   <link rel="stylesheet" href="./components/CodeMirror/style.css" />
 </svelte:head>
 
-<textarea class="textarea" bind:this={el}>{text}</textarea>
+<textarea class="textarea" bind:this={el} tabindex="0 ">{text}</textarea>

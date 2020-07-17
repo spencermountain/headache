@@ -17166,25 +17166,26 @@ var app = (function () {
     			div6 = element("div");
     			div6.textContent = "sunday";
     			attr_dev(div0, "class", "day svelte-1knkt2r");
-    			add_location(div0, file$a, 56, 6, 1291);
+    			add_location(div0, file$a, 70, 6, 1644);
     			attr_dev(div1, "class", "day svelte-1knkt2r");
-    			add_location(div1, file$a, 57, 6, 1327);
+    			add_location(div1, file$a, 71, 6, 1680);
     			attr_dev(div2, "class", "day svelte-1knkt2r");
-    			add_location(div2, file$a, 58, 6, 1364);
+    			add_location(div2, file$a, 72, 6, 1717);
     			attr_dev(div3, "class", "day svelte-1knkt2r");
-    			add_location(div3, file$a, 59, 6, 1403);
+    			add_location(div3, file$a, 73, 6, 1756);
     			attr_dev(div4, "class", "day svelte-1knkt2r");
-    			add_location(div4, file$a, 60, 6, 1441);
+    			add_location(div4, file$a, 74, 6, 1794);
     			attr_dev(div5, "class", "day svelte-1knkt2r");
-    			add_location(div5, file$a, 61, 6, 1477);
+    			add_location(div5, file$a, 75, 6, 1830);
     			attr_dev(div6, "class", "day svelte-1knkt2r");
-    			add_location(div6, file$a, 62, 6, 1515);
+    			add_location(div6, file$a, 76, 6, 1868);
     			attr_dev(div7, "class", "row grid svelte-1knkt2r");
-    			add_location(div7, file$a, 55, 4, 1253);
+    			add_location(div7, file$a, 69, 4, 1606);
     			attr_dev(div8, "class", "container shadow svelte-1knkt2r");
-    			add_location(div8, file$a, 54, 2, 1182);
+    			add_location(div8, file$a, 68, 2, 1535);
     			attr_dev(div9, "class", "col");
-    			add_location(div9, file$a, 53, 0, 1162);
+    			attr_dev(div9, "tabindex", "1");
+    			add_location(div9, file$a, 67, 0, 1474);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -17206,19 +17207,23 @@ var app = (function () {
     			append_dev(div7, div5);
     			append_dev(div7, t11);
     			append_dev(div7, div6);
-    			/*div8_binding*/ ctx[6](div8);
+    			/*div8_binding*/ ctx[7](div8);
 
     			if (!mounted) {
-    				dispose = listen_dev(
-    					div8,
-    					"scroll",
-    					function () {
-    						if (is_function(/*onScroll*/ ctx[1])) /*onScroll*/ ctx[1].apply(this, arguments);
-    					},
-    					false,
-    					false,
-    					false
-    				);
+    				dispose = [
+    					listen_dev(window, "keydown", /*handleKeydown*/ ctx[2], false, false, false),
+    					listen_dev(
+    						div8,
+    						"scroll",
+    						function () {
+    							if (is_function(/*onScroll*/ ctx[1])) /*onScroll*/ ctx[1].apply(this, arguments);
+    						},
+    						false,
+    						false,
+    						false
+    					),
+    					listen_dev(div9, "click", /*click_handler*/ ctx[8], false, false, false)
+    				];
 
     				mounted = true;
     			}
@@ -17230,9 +17235,9 @@ var app = (function () {
     		o: noop,
     		d: function destroy(detaching) {
     			if (detaching) detach_dev(div9);
-    			/*div8_binding*/ ctx[6](null);
+    			/*div8_binding*/ ctx[7](null);
     			mounted = false;
-    			dispose();
+    			run_all(dispose);
     		}
     	};
 
@@ -17271,12 +17276,28 @@ var app = (function () {
     		$$invalidate(1, onScroll = debounce$1(
     			function (e) {
     				xIndex = Math.round(el.scrollLeft / w$1);
-    				$$invalidate(2, date = topLeft.add(xIndex, "days"));
+    				$$invalidate(3, date = topLeft.add(xIndex, "days"));
     				callback(date);
     			},
     			300
     		));
     	});
+
+    	function handleKeydown(event) {
+    		var isFocused = document.activeElement === el;
+
+    		if (!isFocused) {
+    			return;
+    		}
+
+    		if (event.key === "ArrowLeft") {
+    			$$invalidate(0, el.scrollLeft -= w$1, el);
+    		}
+
+    		if (event.key === "ArrowRight") {
+    			$$invalidate(0, el.scrollLeft += w$1, el);
+    		}
+    	}
 
     	const writable_props = ["callback", "date"];
 
@@ -17293,9 +17314,11 @@ var app = (function () {
     		});
     	}
 
+    	const click_handler = () => el.focus();
+
     	$$self.$set = $$props => {
-    		if ("callback" in $$props) $$invalidate(3, callback = $$props.callback);
-    		if ("date" in $$props) $$invalidate(2, date = $$props.date);
+    		if ("callback" in $$props) $$invalidate(4, callback = $$props.callback);
+    		if ("date" in $$props) $$invalidate(3, date = $$props.date);
     	};
 
     	$$self.$capture_state = () => ({
@@ -17309,12 +17332,13 @@ var app = (function () {
     		el,
     		topLeft,
     		xIndex,
-    		onScroll
+    		onScroll,
+    		handleKeydown
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ("callback" in $$props) $$invalidate(3, callback = $$props.callback);
-    		if ("date" in $$props) $$invalidate(2, date = $$props.date);
+    		if ("callback" in $$props) $$invalidate(4, callback = $$props.callback);
+    		if ("date" in $$props) $$invalidate(3, date = $$props.date);
     		if ("el" in $$props) $$invalidate(0, el = $$props.el);
     		if ("topLeft" in $$props) topLeft = $$props.topLeft;
     		if ("xIndex" in $$props) xIndex = $$props.xIndex;
@@ -17325,13 +17349,23 @@ var app = (function () {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [el, onScroll, date, callback, xIndex, topLeft, div8_binding];
+    	return [
+    		el,
+    		onScroll,
+    		handleKeydown,
+    		date,
+    		callback,
+    		xIndex,
+    		topLeft,
+    		div8_binding,
+    		click_handler
+    	];
     }
 
     class DayPick$1 extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$a, create_fragment$a, safe_not_equal, { callback: 3, date: 2 });
+    		init(this, options, instance$a, create_fragment$a, safe_not_equal, { callback: 4, date: 3 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -27160,6 +27194,7 @@ var app = (function () {
     			attr_dev(link, "href", "./components/CodeMirror/style.css");
     			add_location(link, file$b, 48, 2, 992);
     			attr_dev(textarea, "class", "textarea");
+    			attr_dev(textarea, "tabindex", "0 ");
     			textarea.value = /*text*/ ctx[0];
     			add_location(textarea, file$b, 51, 0, 1075);
     		},

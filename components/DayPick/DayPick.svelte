@@ -19,6 +19,19 @@
       callback(date)
     }, 300)
   })
+
+  function handleKeydown(event) {
+    var isFocused = document.activeElement === el
+    if (!isFocused) {
+      return
+    }
+    if (event.key === 'ArrowLeft') {
+      el.scrollLeft -= w
+    }
+    if (event.key === 'ArrowRight') {
+      el.scrollLeft += w
+    }
+  }
 </script>
 
 <style>
@@ -51,7 +64,8 @@
   }
 </style>
 
-<div class="col">
+<svelte:window on:keydown={handleKeydown} />
+<div class="col" on:click={() => el.focus()} tabindex="1">
   <div class="container shadow" on:scroll={onScroll} bind:this={el}>
     <div class="row grid" style="">
       <div class="day">monday</div>
