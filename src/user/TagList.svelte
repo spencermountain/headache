@@ -1,6 +1,6 @@
 <script>
-  import CheckBox from '../../../components/CheckBox/CheckBox.svelte'
-  import { parsed } from '../../store'
+  import CheckBox from '../../components/CheckBox/CheckBox.svelte'
+  import { parsed } from '../store'
 </script>
 
 <style>
@@ -22,12 +22,14 @@
   .row-left {
     justify-content: flex-start;
   }
-  .taglist {
+  .container {
+    align-self: center;
+    min-width: 600px;
     border-left: 5px solid #51627e;
   }
 </style>
 
-<div class="row m1 nowrap row-left taglist">
+<div class="container row m1 nowrap row-left ">
   {#each $parsed.tags as tag}
     <div class="tagBox">
       <div class="square" style="background-color:{tag.color}">

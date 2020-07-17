@@ -1,9 +1,8 @@
 <script>
-  import Input from '../input/Input.svelte'
+  import Input from './Input.svelte'
   import Output from './output/Output.svelte'
-  import Scroll from './Scroll.svelte'
-  import DayPick from './DayPick.svelte'
-  import Vertical from '../../components/Vertical.svelte'
+  import TagList from './TagList.svelte'
+  import Today from './Today.svelte'
   export let logout
   import { getUser, saveUser } from './couch/index.js'
   import { data, date, user, pass } from '../store'
@@ -15,7 +14,7 @@
     })
   })
 
-  const writeNow = function() {
+  const save = function() {
     saveUser($data, $pass)
   }
 
@@ -40,8 +39,8 @@
     justify-content: flex-end;
   }
   .toprow {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+    margin-top: 5rem;
+    margin-bottom: 5rem;
   }
 
   .footer {
@@ -49,7 +48,7 @@
   }
 
   .middle {
-    justify-content: flex-start;
+    justify-content: middle;
     flex-grow: 1;
   }
   .button {
@@ -58,20 +57,17 @@
 </style>
 
 <div class="page">
-  <div class="row container">
-    <!-- left-side -->
-    <!-- <Scroll /> -->
 
-    <!-- middle -->
+  <div class="row container">
     <div class="col middle">
       <div class="toprow">
-        <Input />
+        <Input {save} />
       </div>
+      <Today />
+      <TagList />
       <Output />
     </div>
-
   </div>
-  <!-- <pre>{JSON.stringify($data, null, 2)}</pre> -->
 
 </div>
 <div class="footer">

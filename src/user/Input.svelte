@@ -1,80 +1,91 @@
 <script>
-  import { onMount } from 'svelte'
-  import { data, date } from '../store'
-  import debounce from './lib/debounce'
-  import DayPick from './DayPick.svelte'
+  let text = ''
   import spacetime from 'spacetime'
-  import resizable from './lib/_resizable'
-  export let write = () => {}
-  let value = 'empty'
-  let fmt = $date.format('iso-short')
-  // make it resizable
-  let el = null
-  onMount(() => {
-    // resizable(el)
-    el.focus()
-  })
+  export let date = spacetime.now()
+  import { data } from '../store'
+  export let save = () => {}
+  import DayPick from '../../components/DayPick/DayPick.svelte'
+  import HourPick from '../../components/HourPick/HourPick.svelte'
+  import CodeMirror from '../../components/CodeMirror/CodeMirror.svelte'
+  let render = null
+  let input = null
 
-  // when the date changes
-  date.subscribe(d => {
-    fmt = $date.format('iso-short')
-    value = $data.dates[fmt]
-  })
-  // when the dataset changes
-  data.subscribe(val => {
-    if (val && val.dates) {
-      value = val.dates[fmt]
-    } else {
-      value = ''
-    }
-  })
+  const highlight = function(str = '') {
+    let matches = [...str.matchAll(/\.[^\s\.]+/g)]
+    return matches.map(m => {
+      return {
+        start: m.index,
+        end: m[0].length + m.index,
+        tag: 'tag',
+      }
+    })
+  }
 
-  // send update to server
-  const didChange = debounce(e => {
+  const onClick = function() {
+    render.style.display = 'none'
+    input.style.display = 'block'
+    input.focus()
+  }
+  const focusout = function() {
+    render.style.display = 'block'
+    input.style.display = 'none'
+    date = spacetime(input.value)
+    let d = new Date()
+    date = date.minutes(d.getMinutes()).seconds(d.getSeconds())
+  }
+  const onEnter = function() {
+    let fmt = date.format('iso')
+    let str = text
     data.update(val => {
       val.dates = val.dates || {}
-      val.dates[fmt] = value
-      if (value === '') {
+      val.dates[fmt] = text
+      if (text === '') {
         delete val.dates[fmt]
       }
-      write()
+      save()
       return val
     })
-  }, 750)
+
+    console.log('save')
+  }
 </script>
 
 <style>
-  .container {
-    color: white;
-    position: relative;
+  .render {
+    text-align: left;
+    display: block;
   }
-  .note {
-    max-height: 100px;
-    min-height: 100px;
-    background-color: #51627e;
-    color: white;
-    border-left: 4px solid lightsteelblue;
-    border-bottom: none;
-    resize: none;
+  .input {
+    background-color: #3b4252 !important;
+    border-left: 4px solid #51627e;
+    color: white !important;
+    max-width: 200px !important;
+    min-width: 200px !important;
+    margin: 0px !important;
+    padding: 0px;
+    padding-left: 1rem;
+    display: none;
   }
-  .picker {
-    position: relative;
-    top: -5px;
-    margin-left: -75px;
-    z-index: 4;
+  .row-middle {
+    justify-content: center;
   }
 </style>
 
-<div class="f1" style="text-align:left;">{spacetime($date).format('{day-short} {month} {date}')}</div>
-<div class="container row">
-  <textarea
-    class="note"
-    spellcheck="false"
-    resizable="false"
-    bind:value={$data.dates[fmt]}
-    on:input={didChange}
-    bind:this={el} />
-  <div class="picker">
-    <DayPick bind:date={$date} />
+<div>
+  <div class="render" bind:this={render} on:click={onClick}>
+    {date.format('{day-short} {month} {date-ordinal},  {hour}{ampm}')}
+  </div>
+  <input
+    type="text"
+    bind:this={input}
+    class="input"
+    on:focusout={focusout}
+    value={date.format('{day-short} {month} {date-ordinal},  {hour}{ampm}')} />
+  <CodeMirror bind:text {highlight} {onEnter} />
+  <div class="row row-middle">
+    <DayPick {date} callback={d => (date = d)} />
+    <div class="m1">
+      <HourPick {date} callback={d => (date = d)} />
+    </div>
   </div>
 </div>

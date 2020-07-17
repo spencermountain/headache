@@ -1,34 +1,38 @@
 <script>
-  import { Calendar, Day } from '/Users/spencer/mountain/somehow-calendar/src'
-
-  import { parsed } from '../../store'
-  import TagList from './TagList.svelte'
+  import Calendar from './Calendar.svelte'
 </script>
 
 <style>
   .container {
-    margin-top: 3rem;
-    flex-grow: 1;
-    align-items: flex-start;
-    width: 90%;
-    border-radius: 5px;
-
-    /* border: 2px solid #fbfbfb; */
+    margin-top: 4rem;
+    border-left: 3px solid #a2a8b3;
+    border-right: 3px solid #a2a8b3;
+    scroll-snap-type: x mandatory;
+    overflow-y: scroll;
+    overflow-x: scroll;
+    min-height: 1000px;
+    min-width: 600px;
+    max-width: 600px;
+    flex-wrap: nowrap !important;
+    justify-content: stretch;
+    align-items: self-start;
+    align-self: center;
+  }
+  section {
+    padding: 1rem;
+    min-width: 100%;
+    height: 30rem;
+    border-radius: 4px;
+    scroll-snap-align: start;
+    text-align: center;
+    position: relative;
   }
 </style>
 
-<div class="container">
-
-  <!-- {#each Object.keys($parsed.days) as k}
-    <div>{k}, {$parsed.colors[$parsed.days[k][0]]}</div>
-  {/each}
-  <!-- <pre>{JSON.stringify($parsed, null, 2)}</pre> -->
-  <TagList />
-
-  <!-- <div class="g2 div" /> -->
-  <Calendar start="jan 1 2020" end="today" align="row" width="10rem">
-    {#each Object.keys($parsed.days) as k}
-      <Day date={k} color={$parsed.colors[$parsed.days[k][0]]} />
-    {/each}
-  </Calendar>
+<div class="container row nowrap">
+  <section>
+    <Calendar />
+  </section>
+  <section>output two</section>
+  <section>output three</section>
 </div>
