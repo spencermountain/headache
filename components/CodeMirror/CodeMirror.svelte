@@ -42,6 +42,11 @@
   :global(.CodeMirror) {
     height: 3rem !important;
     width: 35rem !important;
+    background-color: #51627e !important;
+    color: white !important;
+    border-left: 4px solid lightsteelblue !important;
+    border-bottom: none !important;
+    text-align: left !important;
   }
 </style>
 

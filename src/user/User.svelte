@@ -1,5 +1,5 @@
 <script>
-  import Input from './Input.svelte'
+  import Input from '../input/Input.svelte'
   import Output from './output/Output.svelte'
   import Scroll from './Scroll.svelte'
   import DayPick from './DayPick.svelte'
@@ -60,12 +60,12 @@
 <div class="page">
   <div class="row container">
     <!-- left-side -->
-    <Scroll />
+    <!-- <Scroll /> -->
 
     <!-- middle -->
     <div class="col middle">
       <div class="toprow">
-        <Input write={writeNow} />
+        <Input />
       </div>
       <Output />
     </div>

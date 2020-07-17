@@ -1,8 +1,7 @@
 <script>
+  import spacetime from 'spacetime'
   import User from './user/User.svelte'
   import Login from './Login.svelte'
-  import DayPick from '../components/DayPick/DayPick.svelte'
-  import CodeMirror from '../components/CodeMirror/CodeMirror.svelte'
   import { user, pass, data } from './store'
   const logout = function() {
     $user = ''
@@ -12,23 +11,13 @@
     $data = {}
   }
   const submit = () => {}
-  const highlight = function(str = '') {
-    let matches = [...str.matchAll(/\.[^\s\.]+/g)]
-    return matches.map(m => {
-      return {
-        start: m.index,
-        end: m[0].length + m.index,
-        tag: 'tag',
-      }
-    })
-  }
+
   let text = 'in the .town where i was born.. there liv.ed a man'
+  let date = spacetime.now()
 </script>
 
-<CodeMirror bind:text {highlight} />
-<DayPick callback={date => console.log(date.format())} />
 {#if !$user}
-  <!-- <Login /> -->
+  <Login />
 {:else}
-  <!-- <User {logout} /> -->
+  <User {logout} />
 {/if}

@@ -16,9 +16,10 @@
   .div {
     left: 10%;
     width: 80%;
-    height: 10px;
+    height: 6px;
     border-radius: 5px;
-    background-color: #fbfbfb;
+    background-color: #51627e;
+    /* background-color: #fbfbfb; */
   }
   pre {
     text-align: left;
@@ -32,7 +33,7 @@
 </style>
 
 <div class="container">
-  -->
+
   <!-- {#each Object.keys($parsed.days) as k}
     <div>{k}, {$parsed.colors[$parsed.days[k][0]]}</div>
   {/each}
