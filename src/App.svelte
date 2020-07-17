@@ -26,7 +26,6 @@
 </script>
 
 <CodeMirror bind:text {highlight} />
-{text}
 <DayPick callback={date => console.log(date.format())} />
 {#if !$user}
   <!-- <Login /> -->

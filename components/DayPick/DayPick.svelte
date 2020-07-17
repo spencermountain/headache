@@ -3,9 +3,8 @@
   import spacetime from 'spacetime'
   import debounce from './debounce'
   export let callback = () => {}
-  export let date = null //thursday
+  export let date = null
   date = spacetime(date)
-  const h = 75
   const w = 300
   let el
   let topLeft = date.clone().startOf('week')
@@ -32,13 +31,30 @@
       el.scrollLeft += w
     }
   }
+
+  const handle_pointerdown = e => {
+    const start_x = e.clientX
+    el.style['scroll-snap-type'] = 'none'
+    const handle_pointermove = e2 => {
+      const delta = e2.clientX - start_x
+      el.scrollLeft -= delta / 4
+    }
+    const handle_pointerup = e3 => {
+      el.style['scroll-snap-type'] = 'x mandatory'
+      el.scrollLeft -= 1
+      window.removeEventListener('pointermove', handle_pointermove)
+      window.removeEventListener('pointerup', handle_pointerup)
+    }
+    window.addEventListener('pointermove', handle_pointermove)
+    window.addEventListener('pointerup', handle_pointerup)
+  }
 </script>
 
 <style>
   .container {
     border: 1px solid #a2a8b3;
     border-radius: 5px;
-    scroll-snap-type: both mandatory;
+    scroll-snap-type: x mandatory;
     overflow-y: scroll;
     overflow-x: scroll;
     height: 75px;
@@ -56,7 +72,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
+    cursor: move;
   }
   .grid {
     flex-wrap: nowrap !important;
@@ -64,8 +80,9 @@
   }
 </style>
 
-<svelte:window on:keydown={handleKeydown} />
-<div class="col" on:click={() => el.focus()} tabindex="1">
+<svelte:window on:keydown={handleKeydown} on:pointerdown={handle_pointerdown} />
+
+<div class="col" on:click={() => el.focus()}>
   <div class="container shadow" on:scroll={onScroll} bind:this={el}>
     <div class="row grid" style="">
       <div class="day">monday</div>

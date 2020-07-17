@@ -9,19 +9,19 @@
   export let onEnter = e => {
     return CodeMirror.Pass
   }
-
   const clear = function(doc) {
     doc.getAllMarks().forEach(m => m.clear())
   }
 
   onMount(() => {
+    // create codemirror instance
     editor = CodeMirror.fromTextArea(el, {
       autofocus: autofocus,
       extraKeys: {
         Enter: onEnter,
       },
     })
-
+    // update each keypress
     editor.on('change', doc => {
       clear(doc)
       text = doc.getValue()
