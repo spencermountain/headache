@@ -1,6 +1,7 @@
 <script>
   import User from './user/User.svelte'
   import Login from './Login.svelte'
+  import CodeMirror from './CodeMirror/CodeMirror.svelte'
   import { user, pass, data } from './store'
   const logout = function() {
     $user = ''
@@ -11,8 +12,9 @@
   }
 </script>
 
+<CodeMirror />
 {#if !$user}
-  <Login />
+  <!-- <Login /> -->
 {:else}
-  <User {logout} />
+  <!-- <User {logout} /> -->
 {/if}
