@@ -37,6 +37,7 @@ let parsed = derived(data, ($data) => {
       tag: a[0],
       count: a[1],
       color: c,
+      checked: i === 0,
     }
   })
 

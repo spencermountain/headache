@@ -2,6 +2,7 @@
   import { Calendar, Day } from '/Users/spencer/mountain/somehow-calendar/src'
 
   import { parsed } from '../../store'
+  import TagList from './TagList.svelte'
 </script>
 
 <style>
@@ -11,24 +12,8 @@
     align-items: flex-start;
     width: 90%;
     border-radius: 5px;
+
     /* border: 2px solid #fbfbfb; */
-  }
-  .div {
-    left: 10%;
-    width: 80%;
-    height: 6px;
-    border-radius: 5px;
-    background-color: #51627e;
-    /* background-color: #fbfbfb; */
-  }
-  pre {
-    text-align: left;
-  }
-  .square {
-    display: inline-block;
-    border-radius: 2px;
-    height: 2rem;
-    width: 2rem;
   }
 </style>
 
@@ -38,16 +23,9 @@
     <div>{k}, {$parsed.colors[$parsed.days[k][0]]}</div>
   {/each}
   <!-- <pre>{JSON.stringify($parsed, null, 2)}</pre> -->
-  <div class="row m1 nowrap">
-    {#each $parsed.tags.slice(0, 10) as tag}
-      <div>
-        <span class="square" style="background-color:{tag.color}" />
-        {tag.tag}
-      </div>
-    {/each}
-  </div>
+  <TagList />
 
-  <div class="g2 div" />
+  <!-- <div class="g2 div" /> -->
   <Calendar start="jan 1 2020" end="today" align="row" width="10rem">
     {#each Object.keys($parsed.days) as k}
       <Day date={k} color={$parsed.colors[$parsed.days[k][0]]} />
